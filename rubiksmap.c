@@ -32,6 +32,7 @@ void rubiks_map_rotate(RubiksMap * map,
 		index = index % indexCount; // for negative shifting
 		map->indices[i] = mapValues[index];
 	}
+	free(mapValues);
 }
 
 void rubiks_map_multiply(RubiksMap * output,

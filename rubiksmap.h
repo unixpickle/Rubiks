@@ -16,6 +16,7 @@ void rubiks_map_rotate(RubiksMap * map,
 void rubiks_map_multiply(RubiksMap * output,
 						 const RubiksMap * left,
 						 const RubiksMap * right);
+RubiksMap * rubiks_map_inverse(RubiksMap * map);
 void rubiks_map_free(RubiksMap * map);
 
 RubiksMap * rubiks_map_create_top();

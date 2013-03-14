@@ -31,6 +31,10 @@ int main (int argc, const char * argv[]) {
 	findSolutions(3, operations, input);
 	findSolutions(4, operations, input);
 	findSolutions(5, operations, input);
+	findSolutions(6, operations, input);
+	findSolutions(7, operations, input);
+	findSolutions(8, operations, input);
+	findSolutions(9, operations, input);
 finishMain:
 	rubiks_map_free(input);
 	for (i = 0; i < 12; i++) {

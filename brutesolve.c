@@ -25,7 +25,15 @@ int main (int argc, const char * argv[]) {
 		printf("you input a solved cube!\n");
 		goto finishMain;
 	}
+	printf("Internal cube data: ");
 	cube_print_map(input);
+	printf("Operations:\n\
+0 = top        6 =  inverse top\n\
+1 = bottom     7 =  inverse bottom\n\
+2 = right      8 =  inverse right\n\
+3 = left       9 =  inverse left\n\
+4 = front      10 = inverse front\n\
+5 = back       11 = inverse back\n\n\n");
 	findSolutions(1, operations, input);
 	findSolutions(2, operations, input);
 	findSolutions(3, operations, input);

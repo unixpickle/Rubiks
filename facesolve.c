@@ -1,6 +1,8 @@
 #include "cubesearch.h"
 
-int main (int argc, const char * argv[]) {
+int cube_has_face_solved(RubiksMap * map);
+
+int main(int argc, const char * argv[]) {
 	RubiksMap ** operations = (RubiksMap **)malloc(sizeof(RubiksMap *) * 12);
 	operations[0] = rubiks_map_create_top();
 	operations[1] = rubiks_map_create_bottom();
@@ -33,7 +35,7 @@ int main (int argc, const char * argv[]) {
 4 = front      10 = inverse front\n\
 5 = back       11 = inverse back\n\n\n");
 	for (i = 1; i < 21; i++) {
-		findSolutions(i, operations, input, cube_is_solved);
+		findSolutions(i, operations, input, cube_has_face_solved);
 	}
 finishMain:
 	rubiks_map_free(input);
@@ -41,5 +43,10 @@ finishMain:
 		rubiks_map_free(operations[i]);
 	}
 	free(operations);
+	return 0;
+}
+
+int cube_has_face_solved(RubiksMap * map) {
+	if (cube_faces_solved(map) >= 1) return 1;
 	return 0;
 }

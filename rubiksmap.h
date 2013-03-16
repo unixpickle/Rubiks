@@ -1,3 +1,6 @@
+#ifndef __RUBIKS_MAP_H__
+#define __RUBIKS_MAP_H__
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -25,3 +28,5 @@ RubiksMap * rubiks_map_create_right();
 RubiksMap * rubiks_map_create_left();
 RubiksMap * rubiks_map_create_front();
 RubiksMap * rubiks_map_create_back();
+
+#endif

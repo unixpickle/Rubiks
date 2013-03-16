@@ -61,6 +61,32 @@ RubiksMap * cube_identity() {
 	return map;
 }
 
+int cube_faces_solved(RubiksMap * map) {
+	char faceFront = map->indices[frontIndices[0]];
+	char faceBack = map->indices[backIndices[0]];
+	char faceRight = map->indices[rightIndices[0]];
+	char faceLeft = map->indices[leftIndices[0]];
+	char faceTop = map->indices[topIndices[0]];
+	char faceBottom = map->indices[bottomIndices[0]];
+	int i;
+	for (i = 1; i < 9; i++) {
+		if (map->indices[frontIndices[i]] != faceFront) faceFront = -1;
+		if (map->indices[backIndices[i]] != faceBack) faceBack = -1;
+		if (map->indices[rightIndices[i]] != faceRight) faceRight = -1;
+		if (map->indices[leftIndices[i]] != faceLeft) faceLeft = -1;
+		if (map->indices[topIndices[i]] != faceTop) faceTop = -1;
+		if (map->indices[bottomIndices[i]] != faceBottom) faceBottom = -1;
+	}
+	int count = 0;
+	if (faceFront != -1) count += 1;
+	if (faceBack != -1) count += 1;
+	if (faceRight != -1) count += 1;
+	if (faceLeft != -1) count += 1;
+	if (faceTop != -1) count += 1;
+	if (faceBottom != -1) count += 1;
+	return count;
+}
+
 int cube_is_solved(RubiksMap * map) {
 	char faceFront = map->indices[frontIndices[0]];
 	char faceBack = map->indices[backIndices[0]];
@@ -77,7 +103,6 @@ int cube_is_solved(RubiksMap * map) {
 		if (map->indices[topIndices[i]] != faceTop) return 0;
 		if (map->indices[bottomIndices[i]] != faceBottom) return 0;
 	}
-	printf("cube is solved.\n");
 	return 1;
 }
 

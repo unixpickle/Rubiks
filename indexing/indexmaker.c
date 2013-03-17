@@ -24,7 +24,7 @@ int main (int argc, const char * argv[]) {
 	CCTableNode * node = cc_compute_table(info);
 	rubiks_map_free(map);
     
-	FILE * fp = fopen("output.dat", "w");
+	FILE * fp = fopen(outputFile, "w");
 	writeConfigurations(fp, node, &info);
 	fclose(fp);
 	return 0;

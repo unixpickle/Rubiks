@@ -47,7 +47,8 @@ int cc_table_entry_for_node(CCTableNode * node,
                             unsigned char * indicesOut,
                             unsigned char * movesOut,
                             unsigned char * movesCountOut,
-                            unsigned char * searchDepthOut);
+                            unsigned char * searchDepthOut,
+					        unsigned char ** searchDepthPtrOut);
 
 // modification of tables
 

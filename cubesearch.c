@@ -6,7 +6,6 @@
 #define kCubeSearchThreadCount 4
 #define kCubeSearchOperationCount 12
 
-typedef int (*RubiksVerificationMethod)(RubiksMap * map);
 typedef struct {
 	int done;
 	pthread_mutex_t lock;

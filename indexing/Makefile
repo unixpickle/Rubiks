@@ -1,8 +1,8 @@
-indexmaker: cubecorners.o
-	gcc cubecorners.c ../cube.o ../rubiksmap.o indexmaker.c -o indexmaker -I..
+indexmaker: configcounter.o
+	gcc configcounter.o ../cube.o ../rubiksmap.o indexmaker.c -o indexmaker -I..
 
-cubecorners.o: cubecorners.c
-	gcc -c cubecorners.c -I..
+configcounter.o: configcounter.c
+	gcc -c configcounter.c -I..
 
 clean:
 	rm *.o

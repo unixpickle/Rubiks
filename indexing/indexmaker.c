@@ -2,7 +2,7 @@
 
 void writeConfigurations(FILE * file, CCTableNode * node, CCUserInfo * info);
 
-static unsigned const char CubeCornerIndices[] = {2, 26, 0, 24, 30, 6, 32, 8, 5, 29, 3, 27, 11, 35, 9, 33, 39, 51, 41, 52, 50, 38, 48, 36};
+static unsigned const char CubeCornerIndices[] = {2, 26, 0, 24, 30, 6, 32, 8, 5, 29, 3, 27, 11, 35, 9, 33, 39, 51, 41, 53, 50, 38, 48, 36};
 
 int main (int argc, const char * argv[]) {
 	const char * outputFile = NULL;

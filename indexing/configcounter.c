@@ -108,7 +108,23 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
 	if (depth > 0) memcpy(nextPrevious, previousMoves, depth);
 	int i;
 	RubiksMap * deeperCube = rubiks_map_new_identity();
+    char lastMove = depth > 0 ? previousMoves[depth - 1] : -1;
 	for (i = 0; i < kConfigCounterMoveCount; i++) {
+        // remove redundant commutative chains
+        if (depth > 0) {
+            if (lastMove % 2 == 1) {
+                // on an odd move; this is where we limit it
+                if ((i % 6) + 1 == lastMove % 6) {
+                    // we don't perform a commuting even move from an odd move
+                    continue;
+                }
+            }
+            if (lastMove >= 12 && i == lastMove) continue;
+            if (lastMove < 12 && i % 6 == lastMove % 6 && i != lastMove) {
+                // we are making an inverse of the previous move
+                continue;
+            }
+        }
 		nextPrevious[depth] = i;
 		rubiks_map_multiply(deeperCube, operations[i], nodeMap);
 		_cc_recursive_search(userInfo,

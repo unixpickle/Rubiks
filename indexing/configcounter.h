@@ -11,6 +11,7 @@ typedef struct {
 	int indexTableDepth;
     int maximumDepth;
 	RubiksMap * baseMap;
+    int discardBySignificant;
 	unsigned const char * significantIndices;
 } CCUserInfo;
 

@@ -24,13 +24,16 @@ int main (int argc, const char * argv[]) {
 	if (strcmp(subproblem, "corners") == 0) {
     	info.significantIndexCount = 24;
     	info.significantIndices = CubeCornerIndices;
+        info.discardBySignificant = 1;
 	} else if (strcmp(subproblem, "edgefront") == 0) {
 		printf("performing front edge search\n");
 		info.significantIndexCount = 12;
 		info.significantIndices = CubeFrontIndices;
+        info.discardBySignificant = 0;
 	} else if (strcmp(subproblem, "edgeback") == 0) {
 		info.significantIndexCount = 12;
 		info.significantIndices = CubeBackIndices;
+        info.discardBySignificant = 0;
 	} else {
 		fprintf(stderr, "Unknown subproblem.\n");
 		return 1;

@@ -84,8 +84,12 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
 										 NULL, NULL, &moveCount,
 										 &depthCount, &depthCountPtr);
 		if (exists) {
-			if (moveCount < depth) return;
-			if (depthCount == maxDepth && moveCount == depth) return;
+            if (userInfo->discardBySignificant) {
+			    if (moveCount < depth) return;
+			    if (depthCount == maxDepth && moveCount == depth) return;
+            } else {
+                if (depthCount == maxDepth && depth == maxDepth) return;
+            }
 			// prevent future nodes from being explored
 			*depthCountPtr = maxDepth;
 		}

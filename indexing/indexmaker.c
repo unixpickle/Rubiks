@@ -1,28 +1,46 @@
 #include "configcounter.h"
+#include "subproblemindices.h"
 
 void writeConfigurations(FILE * file, CCTableNode * node, CCUserInfo * info);
-
-static unsigned const char CubeCornerIndices[] = {2, 26, 0, 24, 30, 6, 32, 8, 5, 29, 3, 27, 11, 35, 9, 33, 39, 51, 41, 53, 50, 38, 48, 36};
 
 int main (int argc, const char * argv[]) {
 	const char * outputFile = NULL;
 	int depth = 0;
-	if (argc != 3) {
-		fprintf(stderr, "Usage: %s <output> <depth>\n", argv[0]);
+	if (argc != 4) {
+		fprintf(stderr, "Usage: %s <output> <depth> <subproblem>\n\
+\n\nList of subproblems:\n\
+- 'corners' - the corner subproblem\n\
+- 'edgefront' - the front and top edge pieces\n\
+- 'edgeback' - the back and bottom edge pieces\n\n", argv[0]);
 		return 1;
 	}
 	outputFile = argv[1];
 	depth = atoi(argv[2]);
+	const char * subproblem = argv[3];
 
-	RubiksMap * map = cube_identity();
+
     CCUserInfo info;
-    info.significantIndexCount = 24;
     info.indexTableDepth = 5; // provides a good split
+	if (strcmp(subproblem, "corners") == 0) {
+    	info.significantIndexCount = 24;
+    	info.significantIndices = CubeCornerIndices;
+	} else if (strcmp(subproblem, "edgefront") == 0) {
+		printf("performing front edge search\n");
+		info.significantIndexCount = 12;
+		info.significantIndices = CubeFrontIndices;
+	} else if (strcmp(subproblem, "edgeback") == 0) {
+		info.significantIndexCount = 12;
+		info.significantIndices = CubeBackIndices;
+	} else {
+		fprintf(stderr, "Unknown subproblem.\n");
+		return 1;
+	}
+	RubiksMap * map = cube_identity();
     info.maximumDepth = depth;
     info.baseMap = map;
-    info.significantIndices = CubeCornerIndices;
 	CCTableNode * node = cc_compute_table(info);
 	rubiks_map_free(map);
+	printf("saving results...\n");
     
 	FILE * fp = fopen(outputFile, "w");
 	writeConfigurations(fp, node, &info);

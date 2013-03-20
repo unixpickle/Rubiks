@@ -11,7 +11,8 @@ int main (int argc, const char * argv[]) {
 \n\nList of subproblems:\n\
 - 'corners' - the corner subproblem\n\
 - 'edgefront' - the front and top edge pieces\n\
-- 'edgeback' - the back and bottom edge pieces\n\n", argv[0]);
+- 'edgeback' - the back and bottom edge pieces\n\
+- 'edgeall' - all of the twelve edges\n\n", argv[0]);
 		return 1;
 	}
 	outputFile = argv[1];
@@ -34,6 +35,13 @@ int main (int argc, const char * argv[]) {
 		info.significantIndexCount = 12;
 		info.significantIndices = CubeBackIndices;
         info.discardBySignificant = 0;
+    } else if (strcmp(subproblem, "edgeall") == 0) {
+        unsigned char indices[24];
+        memcpy(indices, CubeBackIndices, 12);
+        memcpy(&indices[12], CubeFrontIndices, 12);
+        info.significantIndexCount = 24;
+        info.significantIndices = indices;
+        info.discardBySignificant = 1;
 	} else {
 		fprintf(stderr, "Unknown subproblem.\n");
 		return 1;

@@ -39,21 +39,9 @@ static void _cc_indices_print(const unsigned char * indices, int count);
 
 CCTableNode * cc_compute_table(CCUserInfo info) {
 	CCTableNode * baseTable = (CCTableNode *)malloc(sizeof(CCTableNode));
-	RubiksMap ** operations = malloc(sizeof(RubiksMap *) * kConfigCounterMoveCount);
-	operations[0] = rubiks_map_create_top();
-	operations[1] = rubiks_map_create_bottom();
-	operations[2] = rubiks_map_create_right();
-	operations[3] = rubiks_map_create_left();
-	operations[4] = rubiks_map_create_front();
-	operations[5] = rubiks_map_create_back();
-	int i;
-	for (i = 0; i < 6; i++) {
-		RubiksMap * doubleTurn = rubiks_map_new_identity();
-		rubiks_map_multiply(doubleTurn, operations[i], operations[i]);
-		operations[i + 6] = rubiks_map_inverse(operations[i]);
-		operations[i + 12] = doubleTurn;
-	}
+	RubiksMap ** operations = cube_standard_face_turns();
 	char previousMoves[1];
+    int i;
 	for (i = 0; i <= info.maximumDepth; i++) {
 		printf("Performing search with depth of %d\n", i);
 		_cc_recursive_search(&info, 0, i, previousMoves,

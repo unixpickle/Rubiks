@@ -114,6 +114,24 @@ void cube_print_map(RubiksMap * map) {
 	printf("\n");
 }
 
+RubiksMap ** cube_standard_face_turns() {
+    RubiksMap ** operations = malloc(sizeof(RubiksMap *) * 18);
+    operations[0] = rubiks_map_create_top();
+    operations[1] = rubiks_map_create_bottom();
+    operations[2] = rubiks_map_create_right();
+    operations[3] = rubiks_map_create_left();
+    operations[4] = rubiks_map_create_front();
+    operations[5] = rubiks_map_create_back();
+    int i;
+    for (i = 0; i < 6; i++) {
+        RubiksMap * doubleTurn = rubiks_map_new_identity();
+        rubiks_map_multiply(doubleTurn, operations[i], operations[i]);
+        operations[i + 6] = rubiks_map_inverse(operations[i]);
+        operations[i + 12] = doubleTurn;
+    }
+    return operations;
+}
+
 static int _map_apply_face(RubiksMap * map, const int * indices, const char * str) {
 	int i;
 	for (i = 0; i < 9; i++) {

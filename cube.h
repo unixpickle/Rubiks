@@ -9,5 +9,6 @@ RubiksMap * cube_identity();
 int cube_faces_solved(RubiksMap * map);
 int cube_is_solved(RubiksMap * map);
 void cube_print_map(RubiksMap * map);
+RubiksMap ** cube_standard_face_turns();
 
 #endif

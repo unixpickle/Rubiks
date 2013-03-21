@@ -1,3 +1,8 @@
+#define _LARGEFILE64_SOURCE 1
+#define D_FILE_OFFSET_BITS 64
+#define _FILE_OFFSET_BITS 64
+#define __USE_FILE_OFFSET64 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -5,12 +10,13 @@
 
 #define kCacheTableBufferSize 65536
 
+
 static int indexCount = 0;
 static int moveMax = 0;
 
 static unsigned char * cacheTable;
-static long cacheTableAlloc;
-static long cacheTableCount;
+static long long cacheTableAlloc;
+static long long cacheTableCount;
 static int cacheEntrySize;
 
 void populate_cachetable(FILE * fp);
@@ -18,16 +24,17 @@ void cachetable_add(const unsigned char * indices, unsigned char moves);
 int cachetable_compare(const unsigned char * entry1, const unsigned char * entry2);
 
 int main(int argc, const char * argv[]) {
-	if (argc != 5) {
+	if (argc != 6) {
 		fprintf(stderr, "Converts indexer output to Alex Nichol Cube Index files.\n");
-		fprintf(stderr, "Usage: %s <index count> <move max> <source> <destination>\n",
+		fprintf(stderr, "Usage: %s <index count> <actual max> <move max> <source> <destination>\n",
 			   argv[0]);
 		return 1;
 	}
 	indexCount = atoi(argv[1]);
-	moveMax = atoi(argv[2]);
-	const char * source = argv[3];
-	const char * dest = argv[4];
+    int actualMaximum = atoi(argv[2]);
+	moveMax = atoi(argv[3]);
+	const char * source = argv[4];
+	const char * dest = argv[5];
 
 	cacheEntrySize = 1 + indexCount / 2 + indexCount % 2;
 
@@ -37,7 +44,7 @@ int main(int argc, const char * argv[]) {
 
 	FILE * input = fopen(source, "r");
 	if (!input) {
-		fprintf(stderr, "error: failed to open input file.\n");
+		fprintf(stderr, "error: failed to open input file: %s.\n", source);
 		return 1;
 	}
 	FILE * output = fopen(dest, "w");
@@ -48,6 +55,9 @@ int main(int argc, const char * argv[]) {
 	}
 	populate_cachetable(input);
 	fclose(input);
+    fprintf(output, "ANCI");
+    fwrite(&actualMaximum, 4, 1, output);
+    fwrite(&indexCount, 4, 1, output);
 	fwrite(cacheTable, cacheEntrySize, cacheTableCount, output);
 	fclose(output);
 	return 0;
@@ -55,10 +65,11 @@ int main(int argc, const char * argv[]) {
 
 void populate_cachetable(FILE * fp) {
 	fseek(fp, 0, SEEK_END);
-    long totalSize = ftell(fp);
+    long long totalSize = ftello(fp);
+    printf("file total size %lld\n", totalSize);
     int entrySize = indexCount + moveMax + 2;
     unsigned char * bufferData = (char *)malloc(entrySize * 1000);
-    long offset = 0;
+    long long offset = 0;
 	int addedCount = 0;
     while (offset < totalSize) {
         fseek(fp, offset, SEEK_SET);

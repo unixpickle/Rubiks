@@ -126,15 +126,17 @@ void cachetable_add(const unsigned char * indices, unsigned char moves) {
 	int insertIndex = (highestIndex + lowestIndex) / 2;
 	if (insertIndex < 0) insertIndex = 0;
 	if (insertIndex >= cacheTableCount) insertIndex = cacheTableCount;
-	unsigned char * closeObject = &cacheTable[insertIndex * cacheEntrySize];
-	int relativity = cachetable_compare(closeObject, entryData);
-	if (relativity == 0) {
-		printf("warning: attempted to add duplicate\n");
-		//exit(0);
-		return;
-	} else if (relativity == -1) {
-		insertIndex ++;
-	}
+    if (insertIndex < cacheTableCount) {
+	    unsigned char * closeObject = &cacheTable[insertIndex * cacheEntrySize];
+	    int relativity = cachetable_compare(closeObject, entryData);
+	    if (relativity == 0) {
+		    printf("warning: attempted to add duplicate\n");
+		    exit(0);
+		    return;
+	    } else if (relativity == -1) {
+    		insertIndex ++;
+	    }
+    }
 	if (cacheTableCount == cacheTableAlloc) {
 		cacheTableAlloc += kCacheTableBufferSize;
 		cacheTable = (unsigned char *)realloc(cacheTable,

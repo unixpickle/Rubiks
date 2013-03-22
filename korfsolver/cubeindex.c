@@ -25,6 +25,8 @@ cube_index_t * cube_index_load(const char * path) {
     cubeIndex->entrySize = entrySize;
     cubeIndex->defaultMax = moveMax;
     cubeIndex->indexCount = indexCount;
+    fread(cubeIndex->configurationData, 1, size - 12, fp);
+    fclose(fp);
     return cubeIndex;
 }
 
@@ -37,10 +39,11 @@ int cube_index_lookup_moves(cube_index_t * index, RubiksMap * map, const unsigne
     int entrySize = index->entrySize;
     unsigned char * tableData = index->configurationData;
     unsigned char lookupData[27];
+    bzero(lookupData, 27);
     int i;
     for (i = 0; i < index->indexCount; i++) {
         int shift = i % 2 == 0 ? 4 : 0;
-        lookupData[i / 2] = map->indices[significantIndices[i]] << shift;
+        lookupData[i / 2] |= (map->indices[significantIndices[i]] - 1) << shift;
     }
     int lowestIndex = -1;
     int highestIndex = index->entryCount;

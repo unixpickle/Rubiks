@@ -132,6 +132,15 @@ RubiksMap ** cube_standard_face_turns() {
     return operations;
 }
 
+void cube_print_solution_key() {
+    printf(" 0 - top     6 - top inverse     12 - top double\n");
+    printf(" 1 - bottom  7 - bottom inverse  13 - bottom double\n");
+    printf(" 2 - right   8 - right inverse   14 - right double\n");
+    printf(" 3 - left    9 - left inverse    15 - left double\n");
+    printf(" 4 - front   10 - front inverse  16 - front double\n");
+    printf(" 5 - back    11 - back inverse   17 - back double\n");
+}
+
 static int _map_apply_face(RubiksMap * map, const int * indices, const char * str) {
 	int i;
 	for (i = 0; i < 9; i++) {

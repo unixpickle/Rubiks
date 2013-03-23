@@ -27,6 +27,17 @@ int heuristic_minimum_moves(RubiksMap * map) {
     }
 }
 
+int heuristic_exceeds_moves(RubiksMap * map, int maximum) {
+    if (maximum > 11) return 0;
+    int cornerCount = cube_index_lookup_moves(CornersIndex, map, CubeCornerIndices);
+    if (cornerCount > maximum) return 1;
+    int edgeFront = cube_index_lookup_moves(EdgesFrontIndex, map, CubeFrontIndices);
+    if (edgeFront > maximum) return 1;
+    int edgeBack = cube_index_lookup_moves(EdgesBackIndex, map, CubeBackIndices);
+    if (edgeBack > maximum) return 1;
+    return 0;
+}
+
 void heuristic_free_all() {
     cube_index_free(EdgesFrontIndex);
     cube_index_free(EdgesBackIndex);

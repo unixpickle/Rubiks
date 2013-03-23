@@ -156,7 +156,7 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
 	    }
         return 0;
     }
-    if (heuristic_minimum_moves(baseMap) > maxDepth - currentDepth) return 0;
+    if (heuristic_exceeds_moves(baseMap, maxDepth - currentDepth)) return 0;
 	int i;
 	RubiksMap * map = mapCache[currentDepth];
     char lastMove = previousMoves[currentDepth - 1];

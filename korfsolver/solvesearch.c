@@ -142,7 +142,6 @@ static void * search_thread_main(void * ptr) {
 
 static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves, int currentDepth, int maxDepth, RubiksMap ** mapCache, long long * nodeCount) {
     nodeCount[0] += 1;
-	
     if (nodeCount[0] > (1<<21)) {
         pthread_mutex_lock(&nodesExpandedLock);
         nodesExpanded += nodeCount[0];

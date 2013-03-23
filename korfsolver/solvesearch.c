@@ -23,7 +23,7 @@ static long long nodesExpanded = 0;
 
 static void dispatch_search_threads(RubiksMap * baseMap, int maxDepth);
 static void * search_thread_main(void * ptr);
-static int search_method_main(RubiksMap * baseMap, const unsigned char * lastMoves, int currentDepth, int maxDepth);
+static int search_method_main(RubiksMap * baseMap, unsigned char * lastMoves, int currentDepth, int maxDepth, RubiksMap ** mapCache, long long * nodeCount);
 
 static void thread_report_solved(const unsigned char * moves, int moveCount);
 static int thread_should_return();
@@ -58,7 +58,7 @@ int main(int argc, const char * argv[]) {
     printf("\n");
 
 	int i;
-	for (i = 1; i < maxDepth && i < 21; i++) {
+	for (i = 1; i <= maxDepth && i < 21; i++) {
 		printf("Trying %d depth...\n", i);
 		dispatch_search_threads(userMap, i);
 		if (foundSolutionFlag) {
@@ -117,25 +117,38 @@ static void * search_thread_main(void * ptr) {
 	}
 	if (maxDepth == 0) return NULL;
 	int i;
-	RubiksMap * tmpOutput = rubiks_map_new_identity();
+    RubiksMap ** mapCache = (RubiksMap **)malloc(sizeof(RubiksMap *) * maxDepth);
+    for (i = 0; i < maxDepth; i++) {
+        mapCache[i] = rubiks_map_new_identity();
+    }
+    unsigned char lastMoves[24];
+    long long nodeCount = 0;
 	for (i = 0; i < operationCount; i++) {
-		unsigned char lastMoves = i + operationStart;
+		lastMoves[0] = i + operationStart;
 		RubiksMap * operation = operations[i + operationStart];
-		rubiks_map_multiply(tmpOutput, operation, map);
-		search_method_main(tmpOutput, &lastMoves, 1, maxDepth);
+		rubiks_map_multiply(mapCache[0], operation, map);
+		search_method_main(mapCache[0], lastMoves, 1, maxDepth, mapCache, &nodeCount);
 		if (thread_should_return()) break;
 	}
-	rubiks_map_free(tmpOutput);
+    for (i = 0; i < maxDepth; i++) {
+        rubiks_map_free(mapCache[i]);
+    }
+    free(mapCache);
+    pthread_mutex_lock(&nodesExpandedLock);
+    nodesExpanded += nodeCount;
+    pthread_mutex_unlock(&nodesExpandedLock);
 	return NULL;
 }
 
-static int search_method_main(RubiksMap * baseMap, const unsigned char * previousMoves, int currentDepth, int maxDepth) {
-    pthread_mutex_lock(&nodesExpandedLock);
-    nodesExpanded += 1;
-    if (nodesExpanded % (1<<24) == 0) {
-        printf("Expanded %lld nodes\n", nodesExpanded);
+static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves, int currentDepth, int maxDepth, RubiksMap ** mapCache, long long * nodeCount) {
+    *nodeCount += 1;
+    if (*nodeCount > 1<<22) {
+        pthread_mutex_lock(&nodesExpandedLock);
+        nodesExpanded += *nodeCount;
+        printf("Expanded %lld nodes [depth = %d]\n", nodesExpanded, maxDepth);
+        pthread_mutex_unlock(&nodesExpandedLock);
+        *nodeCount = 0;
     }
-    pthread_mutex_unlock(&nodesExpandedLock);
     if (currentDepth == maxDepth) {
 	    if (cube_is_solved(baseMap)) {
 		    thread_report_solved(previousMoves, currentDepth);
@@ -145,9 +158,7 @@ static int search_method_main(RubiksMap * baseMap, const unsigned char * previou
     }
     if (heuristic_minimum_moves(baseMap) > maxDepth - currentDepth) return 0;
 	int i;
-	unsigned char * newMoves = (unsigned char *)malloc(currentDepth + 1);
-	memcpy(newMoves, previousMoves, currentDepth);
-	RubiksMap * map = rubiks_map_new_identity();
+	RubiksMap * map = mapCache[currentDepth];
     char lastMove = previousMoves[currentDepth - 1];
 	for (i = 0; i < 18; i++) {
         if (lastMove % 2 == 1) {
@@ -162,16 +173,12 @@ static int search_method_main(RubiksMap * baseMap, const unsigned char * previou
             // we are making an inverse of the previous move
             continue;
         }
-		newMoves[currentDepth] = i;
+		previousMoves[currentDepth] = i;
 		rubiks_map_multiply(map, operations[i], baseMap);
-		if (search_method_main(map, newMoves, currentDepth + 1, maxDepth)) {
-			rubiks_map_free(map);
-			free(newMoves);
+		if (search_method_main(map, previousMoves, currentDepth + 1, maxDepth, mapCache, nodeCount)) {
 			return 1;
 		}
 	}
-	rubiks_map_free(map);
-	free(newMoves);
 	if (thread_should_return()) return 1;
 	return 0;
 }

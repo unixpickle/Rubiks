@@ -39,7 +39,7 @@ int cube_index_lookup_moves(cube_index_t * index, RubiksMap * map, const unsigne
     int entrySize = index->entrySize;
     unsigned char * tableData = index->configurationData;
     unsigned char lookupData[27];
-    bzero(lookupData, 27);
+    bzero(lookupData, entrySize);
     int i;
     for (i = 0; i < index->indexCount; i++) {
         int shift = i % 2 == 0 ? 4 : 0;
@@ -51,7 +51,7 @@ int cube_index_lookup_moves(cube_index_t * index, RubiksMap * map, const unsigne
         int testIndex = (highestIndex + lowestIndex) / 2;
         unsigned char * testObject = &tableData[testIndex * entrySize];
         int relativity = cachetable_compare(testObject, lookupData,
-                                            index->indexCount);
+                                            entrySize - 1);
         if (relativity == 1) {
             highestIndex = testIndex;
         } else if (relativity == -1) {
@@ -66,15 +66,14 @@ int cube_index_lookup_moves(cube_index_t * index, RubiksMap * map, const unsigne
     if (foundIndex < 0) return index->defaultMax;
     if (foundIndex >= index->entryCount) return index->defaultMax;
     unsigned char * foundObject = &tableData[foundIndex * entrySize];
-    if (cachetable_compare(lookupData, foundObject, index->indexCount) == 0) {
+    if (cachetable_compare(lookupData, foundObject, entrySize - 1) == 0) {
         return foundObject[entrySize - 1];
     }
     return index->defaultMax;
 }
 
-static int cachetable_compare(const unsigned char * entry1, const unsigned char * entry2, int indexCount) {
+static int cachetable_compare(const unsigned char * entry1, const unsigned char * entry2, int byteCount) {
     // compare each byte
-    int byteCount = indexCount / 2 + (indexCount % 2);
     int i;
     for (i = 0; i < byteCount; i++) {
         if (entry1[i] > entry2[i]) return 1;

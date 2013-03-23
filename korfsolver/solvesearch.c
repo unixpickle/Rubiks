@@ -141,13 +141,14 @@ static void * search_thread_main(void * ptr) {
 }
 
 static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves, int currentDepth, int maxDepth, RubiksMap ** mapCache, long long * nodeCount) {
-    *nodeCount += 1;
-    if (*nodeCount > 1<<22) {
+    nodeCount[0] += 1;
+	
+    if (nodeCount[0] > (1<<21)) {
         pthread_mutex_lock(&nodesExpandedLock);
-        nodesExpanded += *nodeCount;
+        nodesExpanded += nodeCount[0];
         printf("Expanded %lld nodes [depth = %d]\n", nodesExpanded, maxDepth);
         pthread_mutex_unlock(&nodesExpandedLock);
-        *nodeCount = 0;
+        nodeCount[0] = 0;
     }
     if (currentDepth == maxDepth) {
 	    if (cube_is_solved(baseMap)) {
@@ -173,7 +174,7 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
             // we are making an inverse of the previous move
             continue;
         }
-		previousMoves[currentDepth] = i;
+		previousMoves[currentDepth] = (unsigned char)i;
 		rubiks_map_multiply(map, operations[i], baseMap);
 		if (search_method_main(map, previousMoves, currentDepth + 1, maxDepth, mapCache, nodeCount)) {
 			return 1;

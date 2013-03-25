@@ -20,3 +20,4 @@ clean:
 	rm indexmaker
 	rm cornergen
 	rm tableformat
+	rm tableformat2

@@ -21,10 +21,10 @@
 #define kCacheTableBufferSize 65536
 
 typedef enum {
-	TableIndexTypeCorners,
-	TableIndexTypeEdgeFront,
-	TableIndexTypeEdgeBack,
-	TableIndexTypeEdgeAll
+	TableIndexTypeCorners = 4,
+	TableIndexTypeEdgeFront = 1,
+	TableIndexTypeEdgeBack = 2,
+	TableIndexTypeEdgeAll = 3
 } TableIndexType;
 
 static long long dbEntrySize = 0;
@@ -59,12 +59,11 @@ int main(int argc, const char * argv[]) {
  edgeall - all 12 edges of the cube\n\n");
 		return 1;
 	}
-	dbIndexCount = atoi(argv[1]);
-	int actualMaximum = atoi(argv[2]);
-	dbMovesCount = atoi(argv[3]);
-	const char * indexTypeStr = argv[4];
-	const char * source = argv[5];
-	const char * dest = argv[6];
+	int actualMaximum = atoi(argv[1]);
+	dbMovesCount = atoi(argv[2]);
+	const char * indexTypeStr = argv[3];
+	const char * source = argv[4];
+	const char * dest = argv[5];
 
 	if (strcmp(indexTypeStr, "corners") == 0) {
 		entrySize = 9;
@@ -92,8 +91,6 @@ int main(int argc, const char * argv[]) {
 		return 1;
 	}
 
-	dbIndexCount = 0;
-
 	dbEntrySize = dbIndexCount + dbMovesCount + 2;
 	
 	FILE * inputFile = fopen(source, "r");
@@ -109,15 +106,22 @@ int main(int argc, const char * argv[]) {
 	fseek(inputFile, 0, SEEK_SET);
 	
 	outputData = (unsigned char *)malloc(entryCount * entrySize);
-	printf("adding %lld entries\n", entryCount);
+	printf("adding %lld entries (%lld bytes)\n", entryCount, entryCount * entrySize);
 	addAllDbEntries(inputFile);
 	fclose(inputFile);
 	
 	FILE * outputFile = fopen(dest, "w");
 	// TODO: write headers here
+    unsigned char theMoveMax = actualMaximum;
+    unsigned char type = indexType;
+    fprintf(outputFile, "ANC2");
+    fwrite(&type, 1, 1, outputFile);
+    fwrite(&theMoveMax, 1, 1, outputFile);
 	fwrite(outputData, entrySize, entryCount, outputFile);
 	fclose(outputFile);
 	free(outputData);
+
+    printf("encoded a total of %lld entries\n", encodedCount);
 
 	return 0;
 }
@@ -136,12 +140,15 @@ void addAllDbEntries(FILE * input) {
 			const unsigned char * entry = &buffer[i * dbEntrySize];
 			addDbEntry(entry);
 		}
+        entriesDone += readEntries;
+        printf("done %lld entries\n", entriesDone);
 	}
 }
 
 void addDbEntry(const unsigned char * dbEntry) {
 	char insertionObject[54];
 	convertEntry(insertionObject, dbEntry);
+
 	// perform a binary search to find the insertion index
 	int lowestIndex = -1;
 	int highestIndex = encodedCount;
@@ -161,8 +168,8 @@ void addDbEntry(const unsigned char * dbEntry) {
 	}
 	int insertIndex = (highestIndex + lowestIndex) / 2;
 	if (insertIndex < 0) insertIndex = 0;
-	if (insertIndex >= entryCount) insertIndex = entryCount;
-    if (insertIndex < entryCount) {
+	if (insertIndex >= encodedCount) insertIndex = encodedCount;
+    if (insertIndex < encodedCount) {
 	    unsigned char * closeObject = &outputData[insertIndex * entrySize];
 	    int relativity = compareEntries(closeObject, insertionObject);
 	    if (relativity == 0) {
@@ -172,7 +179,7 @@ void addDbEntry(const unsigned char * dbEntry) {
     		insertIndex ++;
 	    }
     }
-	int copyCount = entryCount - insertIndex;
+	int copyCount = encodedCount - insertIndex;
 	if (copyCount > 0) {
 		unsigned char * memStart = &outputData[insertIndex * entrySize];
 		unsigned char * memDest = &outputData[(insertIndex + 1) * entrySize];
@@ -220,13 +227,13 @@ void convertCorners(unsigned char * cornersOut, const unsigned char * dbData) {
 				if (dbSignificantIndices[k] == cornerIndex) {
 					dataIndex = k;
 					break;
-				}
+                }
 			}
 			if (dataIndex < 0) {
-				fprintf(stderr, "error: couldn't look up corner index\n");
+				fprintf(stderr, "error: couldn't look up corner index %d\n", cornerIndex);
 				exit(0);
 			}
-			realColors[j] = dbData[dataIndex];
+			realColors[j] = dbData[dataIndex] + 1;
 		}
 		int realIndex = -1, symmetry = -1;
 		for (j = 0; j < 8; j++) {
@@ -261,7 +268,7 @@ void convertEdges(unsigned char * edgesOut, const unsigned char * dbData, int ed
 				fprintf(stderr, "error: couldn't look up corner index\n");
 				exit(0);
 			}
-			realColors[j] = dbData[dataIndex];
+			realColors[j] = dbData[dataIndex] + 1;
 		}
 		int realIndex = -1, symmetry = -1;
 		for (j = 0; j < 12; j++) {

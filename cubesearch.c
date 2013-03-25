@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define kCubeSearchThreadCount 4
-#define kCubeSearchOperationCount 12
+#define kCubeSearchOperationCount 18
 
 typedef struct {
 	int done;

@@ -1,25 +1,23 @@
-main: rubiksmap.o cube.o brutesolve facesolve indexing_build
+main: brutesolve facesolve
 
-brutesolve: rubiksmap.o cube.o cubesearch.o
-	gcc -O2 brutesolve.c rubiksmap.o cube.o cubesearch.o -o brutesolve -lpthread
+brutesolve: representation_build cubesearch.o
+	gcc -Irepresentation -O2 brutesolve.c cubesearch.o representation/*.o -o brutesolve -lpthread
 
-facesolve: rubiksmap.o cube.o cubesearch.o
-	gcc -O2 facesolve.c rubiksmap.o cube.o cubesearch.o -o facesolve -lpthread
+facesolve: representation_build cubesearch.o
+	gcc -Irepresentation -O2 facesolve.c cubesearch.o representation/*.o -o facesolve -lpthread
 
-indexing_build: cube.o
+indexing_build: representation_build
 	cd indexing && make
 
-cubesearch.o: cubesearch.c cube.o
-	gcc -O2 -c cubesearch.c -lpthread
+representation_build:
+	cd representation && make
 
-rubiksmap.o: rubiksmap.c
-	gcc -O2 -c rubiksmap.c
-
-cube.o: cube.c rubiksmap.o
-	gcc -O2 -c cube.c
+cubesearch.o: cubesearch.c representation_build
+	gcc -O2 -c cubesearch.c -Irepresentation -lpthread
 
 clean:
 	rm *.o
 	rm brutesolve
 	rm facesolve
+	cd representation && make clean
 	cd indexing && make clean

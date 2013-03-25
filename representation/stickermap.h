@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
 
 typedef struct {
 	unsigned char indices[54];
@@ -28,5 +29,11 @@ StickerMap * sticker_map_create_right();
 StickerMap * sticker_map_create_left();
 StickerMap * sticker_map_create_front();
 StickerMap * sticker_map_create_back();
+
+StickerMap * sticker_map_user_input();
+StickerMap * sticker_map_identity();
+int sticker_map_faces_solved(StickerMap * map);
+int sticker_map_is_solved(StickerMap * map);
+void sticker_map_print(StickerMap * map);
 
 #endif

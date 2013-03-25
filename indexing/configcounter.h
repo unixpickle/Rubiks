@@ -10,7 +10,7 @@ typedef struct {
 	int significantIndexCount;
 	int indexTableDepth;
     int maximumDepth;
-	RubiksMap * baseMap;
+	StickerMap * baseMap;
     int discardBySignificant;
 	unsigned const char * significantIndices;
 } CCUserInfo;
@@ -36,7 +36,7 @@ CCTableNode * cc_compute_table(CCUserInfo info);
  */
 CCTableNode * cc_table_node_for_map(CCTableNode * root,
                                     CCUserInfo * userInfo,
-                                    RubiksMap * map);
+                                    StickerMap * map);
 
 /**
  * Searches a table node's rawEntries data for a given map
@@ -44,7 +44,7 @@ CCTableNode * cc_table_node_for_map(CCTableNode * root,
  */
 int cc_table_entry_for_node(CCTableNode * node,
                             CCUserInfo * userInfo,
-                            RubiksMap * map,
+                            StickerMap * map,
                             unsigned char * indicesOut,
                             unsigned char * movesOut,
                             unsigned char * movesCountOut,
@@ -59,7 +59,7 @@ int cc_table_entry_for_node(CCTableNode * node,
  */
 void cc_table_add_entry(CCTableNode * root,
                         CCUserInfo * userInfo,
-                        RubiksMap * map,
+                        StickerMap * map,
                         unsigned char * moves,
                         unsigned char movesCount,
                         unsigned char searchDepth);

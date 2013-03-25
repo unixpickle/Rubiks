@@ -46,11 +46,11 @@ int main (int argc, const char * argv[]) {
 		fprintf(stderr, "Unknown subproblem.\n");
 		return 1;
 	}
-	RubiksMap * map = cube_identity();
+	StickerMap * map = sticker_map_identity();
     info.maximumDepth = depth;
     info.baseMap = map;
 	CCTableNode * node = cc_compute_table(info);
-	rubiks_map_free(map);
+	sticker_map_free(map);
 	printf("saving results...\n");
     
 	FILE * fp = fopen(outputFile, "w");

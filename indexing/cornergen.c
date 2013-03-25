@@ -11,7 +11,7 @@ int main (int argc, const char * argv[]) {
 		fprintf(stderr, "Usage: %s <dbPath>\n", argv[0]);
 		return 1;
 	}
-	RubiksMap * map = cube_user_input();
+	StickerMap * map = sticker_map_user_input();
 	if (!map) return 1;
 	char cornerPieces[24];
 	int i;

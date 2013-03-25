@@ -1,4 +1,4 @@
-#include "StickerMap.h"
+#include "stickermap.h"
 
 static int _sticker_map_apply_face(StickerMap * map, const int * indices, const char * str);
 
@@ -167,7 +167,7 @@ StickerMap * sticker_map_user_input() {
 	return map;
     
 failureHandler:
-	rubiks_map_free(map);
+	sticker_map_free(map);
 	return NULL;
 }
 
@@ -233,6 +233,24 @@ void sticker_map_print(StickerMap * map) {
 		printf("%d%s", map->indices[i], i == 53 ? "" : " ");
 	}
 	printf("\n");
+}
+
+StickerMap ** sticker_map_standard_face_turns() {
+    StickerMap ** operations = malloc(sizeof(StickerMap *) * 18);
+    operations[0] = sticker_map_create_top();
+    operations[1] = sticker_map_create_bottom();
+    operations[2] = sticker_map_create_right();
+    operations[3] = sticker_map_create_left();
+    operations[4] = sticker_map_create_front();
+    operations[5] = sticker_map_create_back();
+	int i;
+	for (i = 0; i < 6; i++) {
+		StickerMap * doubleTurn = sticker_map_new_identity();
+		sticker_map_multiply(doubleTurn, operations[i], operations[i]);
+		operations[i + 6] = sticker_map_inverse(operations[i]);
+		operations[i + 12] = doubleTurn;
+	}
+	return operations;
 }
 
 static int _sticker_map_apply_face(StickerMap * map, const int * indices, const char * str) {

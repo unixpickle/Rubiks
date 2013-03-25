@@ -13,7 +13,7 @@ static int _cc_indices_compare(unsigned char * entry1,
 							   int entryCount);
 
 static void _cc_indices_for_map(CCUserInfo * info,
-								RubiksMap * map,
+								StickerMap * map,
 								unsigned char * entryOut);
 
 static int _cc_binary_search(CCUserInfo * info,
@@ -31,15 +31,15 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
 								 int depth,
 								 int maxDepth,
 								 char * previousMoves,
-								 RubiksMap * nodeMap,
-								 RubiksMap ** operations,
+								 StickerMap * nodeMap,
+								 StickerMap ** operations,
 								 CCTableNode * root);
 
 static void _cc_indices_print(const unsigned char * indices, int count);
 
 CCTableNode * cc_compute_table(CCUserInfo info) {
 	CCTableNode * baseTable = (CCTableNode *)malloc(sizeof(CCTableNode));
-	RubiksMap ** operations = cube_standard_face_turns();
+	StickerMap ** operations = sticker_map_standard_face_turns();
 	char previousMoves[1];
     int i;
 	for (i = 0; i <= info.maximumDepth; i++) {
@@ -48,7 +48,7 @@ CCTableNode * cc_compute_table(CCUserInfo info) {
 							 info.baseMap, operations, baseTable);
 	}
 	for (i = 0; i < kConfigCounterMoveCount; i++) {
-		rubiks_map_free(operations[i]);
+		sticker_map_free(operations[i]);
 	}
 	free(operations);
 	return baseTable;
@@ -58,8 +58,8 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
 								 int depth,
 								 int maxDepth,
 								 char * previousMoves,
-								 RubiksMap * nodeMap,
-								 RubiksMap ** operations,
+								 StickerMap * nodeMap,
+								 StickerMap ** operations,
 								 CCTableNode * root) {
 	CCTableNode * baseNode = cc_table_node_for_map(root, userInfo, nodeMap);
 	int exists = 0;
@@ -95,7 +95,7 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
 	char * nextPrevious = (char *)malloc(depth + 1);
 	if (depth > 0) memcpy(nextPrevious, previousMoves, depth);
 	int i;
-	RubiksMap * deeperCube = rubiks_map_new_identity();
+	StickerMap * deeperCube = sticker_map_new_identity();
     char lastMove = depth > 0 ? previousMoves[depth - 1] : -1;
 	for (i = 0; i < kConfigCounterMoveCount; i++) {
         // remove redundant commutative chains
@@ -114,7 +114,7 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
             }
         }
 		nextPrevious[depth] = i;
-		rubiks_map_multiply(deeperCube, operations[i], nodeMap);
+		sticker_map_multiply(deeperCube, operations[i], nodeMap);
 		_cc_recursive_search(userInfo,
 							 depth + 1,
 							 maxDepth,
@@ -124,14 +124,14 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
 							 root);
 	}
 	free(nextPrevious);
-	rubiks_map_free(deeperCube);
+	sticker_map_free(deeperCube);
 }
 
 // looking up nodes
 
 CCTableNode * cc_table_node_for_map(CCTableNode * root,
 									CCUserInfo * userInfo,
-									RubiksMap * map) {
+									StickerMap * map) {
 	char indices[54];
 	_cc_indices_for_map(userInfo, map, indices);
 	
@@ -148,7 +148,7 @@ CCTableNode * cc_table_node_for_map(CCTableNode * root,
 
 int cc_table_entry_for_node(CCTableNode * node,
 							CCUserInfo * userInfo,
-							RubiksMap * map,
+							StickerMap * map,
 							unsigned char * indicesOut,
 							unsigned char * movesOut,
 							unsigned char * movesCountOut,
@@ -188,7 +188,7 @@ int cc_table_entry_for_node(CCTableNode * node,
 
 void cc_table_add_entry(CCTableNode * root,
 						CCUserInfo * userInfo,
-						RubiksMap * map,
+						StickerMap * map,
 						unsigned char * moves,
 						unsigned char movesCount,
 						unsigned char searchDepth) {
@@ -236,7 +236,7 @@ static int _cc_indices_compare(unsigned char * entry1,
 }
 
 static void _cc_indices_for_map(CCUserInfo * info,
-								RubiksMap * map,
+								StickerMap * map,
 								unsigned char * entryOut) {
 	int i;
 	for (i = 0; i < info->significantIndexCount; i++) {

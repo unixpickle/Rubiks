@@ -35,5 +35,6 @@ StickerMap * sticker_map_identity();
 int sticker_map_faces_solved(StickerMap * map);
 int sticker_map_is_solved(StickerMap * map);
 void sticker_map_print(StickerMap * map);
+StickerMap ** sticker_map_standard_face_turns();
 
 #endif

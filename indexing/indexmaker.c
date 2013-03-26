@@ -4,20 +4,20 @@
 void writeConfigurations(FILE * file, CCTableNode * node, CCUserInfo * info);
 
 int main(int argc, const char * argv[]) {
-	const char * outputFile = NULL;
-	int depth = 0;
-	if (argc != 4) {
-		fprintf(stderr, "Usage: %s <output> <depth> <subproblem>\n\
+    const char * outputFile = NULL;
+    int depth = 0;
+    if (argc != 4) {
+        fprintf(stderr, "Usage: %s <output> <depth> <subproblem>\n\
 \n\nList of subproblems:\n\
 - 'corners' - the corner subproblem\n\
 - 'edgefront' - the front and top edge pieces\n\
 - 'edgeback' - the back and bottom edge pieces\n\
 - 'edgeall' - all of the twelve edges\n\n", argv[0]);
-		return 1;
-	}
-	outputFile = argv[1];
-	depth = atoi(argv[2]);
-	const char * subproblem = argv[3];
+        return 1;
+    }
+    outputFile = argv[1];
+    depth = atoi(argv[2]);
+    const char * subproblem = argv[3];
 
     CCUserInfo info;
     info.shardDepth = 5; // provides a good split
@@ -25,36 +25,36 @@ int main(int argc, const char * argv[]) {
     if (info.indexType == IndexTypeUnknown) {
         fprintf(stderr, "error: unknown subproblem %s\n", subproblem);
     }
-	RubiksMap * map = rubiks_map_new_identity();
+    RubiksMap * map = rubiks_map_new_identity();
     info.maximumDepth = depth;
     info.identity = map;
-	ShardNode * node = cc_compute_table(info);
-	rubiks_map_free(map);
-	printf("saving results...\n");
+    ShardNode * node = cc_compute_table(info);
+    rubiks_map_free(map);
+    printf("saving results...\n");
     
-	FILE * fp = fopen(outputFile, "w");
-	index_file_write(info.indexType,
+    FILE * fp = fopen(outputFile, "w");
+    index_file_write(info.indexType,
                      index_type_data_size(info.indexType) + 1,
                      index_type_data_size(info.indexType) + 2,
                      info.maximumDepth, node, output);
-	fclose(fp);
+    fclose(fp);
     
     shard_node_free(node);
-	return 0;
+    return 0;
 }
 
 void writeConfigurations(FILE * file, CCTableNode * node, CCUserInfo * info) {
-	int i;
-	if (node->rawEntries) {
-		int entrySize = info->significantIndexCount + info->maximumDepth + 2;
-		int count = node->rawEntriesCount;
-		fwrite(node->rawEntries, entrySize, count, file);
-	}
-	for (i = 0; i < 6; i++) {
-		CCTableNode * subnode = node->subnodes[i];
-		if (subnode) {
-			writeConfigurations(file, subnode, info);
-		}
-	}
+    int i;
+    if (node->rawEntries) {
+        int entrySize = info->significantIndexCount + info->maximumDepth + 2;
+        int count = node->rawEntriesCount;
+        fwrite(node->rawEntries, entrySize, count, file);
+    }
+    for (i = 0; i < 6; i++) {
+        CCTableNode * subnode = node->subnodes[i];
+        if (subnode) {
+            writeConfigurations(file, subnode, info);
+        }
+    }
 }
 

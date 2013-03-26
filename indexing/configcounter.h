@@ -9,10 +9,10 @@
 #include "index.h"
 
 typedef struct {
-	IndexType indexType;
-	int shardDepth;
+    IndexType indexType;
+    int shardDepth;
     int maximumDepth;
-	RubiksMap * identity;
+    RubiksMap * identity;
 } CCUserInfo;
 
 // retreiving and working with tables

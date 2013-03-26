@@ -12,6 +12,7 @@ typedef struct {
     IndexType indexType;
     int shardDepth;
     int maximumDepth;
+    int nodesExpanded;
     RubiksMap * identity;
 } CCUserInfo;
 

@@ -14,8 +14,9 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                  ShardNode * root,
                                  int mapDataSize);
 
-CCTableNode * cc_compute_table(CCUserInfo info) {
-    ShardNode * baseNode = shard_node_new();
+ShardNode * cc_compute_table(CCUserInfo info) {
+    info.nodesExpanded = 0;
+    ShardNode * baseNode = shard_node_new(info.shardDepth);
     RubiksMap ** operations = cube_standard_face_turns();
     char previousMoves[1];
     int i;
@@ -29,6 +30,7 @@ CCTableNode * cc_compute_table(CCUserInfo info) {
         rubiks_map_free(operations[i]);
     }
     free(operations);
+    printf("Expanded a total of %d nodes.\n", info.nodesExpanded);
     return baseNode;
 }
 
@@ -47,28 +49,28 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
     mapData[mapDataSize + 1] = maxDepth;
     // find if the rubiks information already exists in the table
     ShardNode * baseNode = shard_node_search_base(root, mapData, mapDataSize, 1);
+    
     int entryDataLength = mapDataSize + 2 - userInfo->shardDepth;
     unsigned char * entry = shard_node_base_lookup(baseNode, 
                                                    &mapData[userInfo->shardDepth],
-                                                   entryDataLength,
-                                                   entryDataLength - 2);
+                                                   entryDataLength, 2);
     // if the information exists, check if we are done with this node
     if (entry) {
         if (userInfo->indexType == IndexTypeCorners ||
             userInfo->indexType == IndexTypeEdgeAll) {
-            if (entry[mapDataSize] < depth) return;
-            if (memcmp(&entry[mapDataSize], &mapData[mapDataSize], 2) == 0) return;
+            if (entry[entryDataLength - 2] < depth) return;
+            if (memcmp(&entry[entryDataLength - 2], &mapData[mapDataSize], 2) == 0) return;
         } else {
-            if (entry[mapDataSize + 1] == maxDepth && depth == maxDepth) return;
+            if (entry[entryDataLength - 1] == maxDepth && depth == maxDepth) return;
         }
         // prevent future nodes from being explored
-        entry[mapDataSize + 1] = maxDepth;
+        entry[entryDataLength - 1] = maxDepth;
     } else {
-        shard_node_base_add(baseNode, &mapData[userInfo->shardDepth],
-                            entryDataLength, entryDataLength - 2);
-        cubesAdded++;
-        if (cubesAdded % 65536 == 0) {
-            printf("Found %d cubes\n", cubesAdded);
+        int res = shard_node_base_add(baseNode, &mapData[userInfo->shardDepth],
+                                      entryDataLength, 2);
+        userInfo->nodesExpanded++;
+        if (userInfo->nodesExpanded % 65536 == 0) {
+            printf("Found %d cubes\n", userInfo->nodesExpanded);
         }
     }
     if (depth == maxDepth) return;

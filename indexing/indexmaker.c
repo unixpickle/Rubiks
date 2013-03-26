@@ -1,8 +1,6 @@
 #include "configcounter.h"
 #include "subproblemindices.h"
 
-void writeConfigurations(FILE * file, CCTableNode * node, CCUserInfo * info);
-
 int main(int argc, const char * argv[]) {
     const char * outputFile = NULL;
     int depth = 0;
@@ -30,31 +28,15 @@ int main(int argc, const char * argv[]) {
     info.identity = map;
     ShardNode * node = cc_compute_table(info);
     rubiks_map_free(map);
-    printf("saving results...\n");
+    printf("Saving nodes...\n");
     
     FILE * fp = fopen(outputFile, "w");
     index_file_write(info.indexType,
                      index_type_data_size(info.indexType) + 1,
                      index_type_data_size(info.indexType) + 2,
-                     info.maximumDepth, node, output);
+                     info.maximumDepth, node, fp);
     fclose(fp);
     
     shard_node_free(node);
     return 0;
 }
-
-void writeConfigurations(FILE * file, CCTableNode * node, CCUserInfo * info) {
-    int i;
-    if (node->rawEntries) {
-        int entrySize = info->significantIndexCount + info->maximumDepth + 2;
-        int count = node->rawEntriesCount;
-        fwrite(node->rawEntries, entrySize, count, file);
-    }
-    for (i = 0; i < 6; i++) {
-        CCTableNode * subnode = node->subnodes[i];
-        if (subnode) {
-            writeConfigurations(file, subnode, info);
-        }
-    }
-}
-

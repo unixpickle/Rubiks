@@ -7,10 +7,11 @@
 
 typedef struct {
     void ** subnodes;
-    int subnodeCount;
+    unsigned char subnodeCount;
+    unsigned char subnodeAlloc;
     unsigned char nodeCharacter;
     // node data for base nodes
-    int depthRemaining; // 0 means this is a base node
+    unsigned char depthRemaining; // 0 means this is a base node
     unsigned char * nodeData;
     int nodeDataSize;
     int nodeDataAlloc;

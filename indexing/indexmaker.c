@@ -18,7 +18,7 @@ int main(int argc, const char * argv[]) {
     const char * subproblem = argv[3];
 
     CCUserInfo info;
-    info.shardDepth = 5; // provides a good split
+    info.shardDepth = 3; // provides a good split
     info.indexType = index_type_from_string(subproblem);
     if (info.indexType == IndexTypeUnknown) {
         fprintf(stderr, "error: unknown subproblem %s\n", subproblem);

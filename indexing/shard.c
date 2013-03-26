@@ -175,9 +175,11 @@ static void _shard_base_insert_at(ShardNode * node,
 
 static void _shard_node_insert_subnode(ShardNode * node, ShardNode * subnode, int index) {
     if (!node->subnodes) {
-        node->subnodes = malloc(sizeof(void *));
-    } else {
-        node->subnodes = realloc(node->subnodes, sizeof(void *) * (node->subnodeCount + 1));
+        node->subnodes = malloc(sizeof(void *) * 8);
+        node->subnodeAlloc = 8;
+    } else if (node->subnodeAlloc == node->subnodeCount) {
+        node->subnodeAlloc += 8;
+        node->subnodes = realloc(node->subnodes, sizeof(void *) * node->subnodeAlloc);
     }
     int moveCount = node->subnodeCount - index;
     if (moveCount > 0) {

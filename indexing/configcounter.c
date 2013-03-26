@@ -12,7 +12,7 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                  RubiksMap * nodeMap,
                                  RubiksMap ** operations,
                                  ShardNode * root,
-                                 int mapDataSize);
+                                 int indexCount);
 
 ShardNode * cc_compute_table(CCUserInfo info) {
     info.nodesExpanded = 0;
@@ -41,16 +41,16 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                  RubiksMap * nodeMap,
                                  RubiksMap ** operations,
                                  ShardNode * root,
-                                 int mapDataSize) {
+                                 int indexCount) {
     // generate the map data
     char mapData[22];
     index_type_copy_data(userInfo->indexType, mapData, nodeMap);
-    mapData[mapDataSize] = depth;
-    mapData[mapDataSize + 1] = maxDepth;
+    mapData[indexCount] = depth;
+    mapData[indexCount + 1] = maxDepth;
     // find if the rubiks information already exists in the table
-    ShardNode * baseNode = shard_node_search_base(root, mapData, mapDataSize, 1);
+    ShardNode * baseNode = shard_node_search_base(root, mapData, indexCount, 1);
     
-    int entryDataLength = mapDataSize + 2 - userInfo->shardDepth;
+    int entryDataLength = indexCount + 2 - userInfo->shardDepth;
     unsigned char * entry = shard_node_base_lookup(baseNode, 
                                                    &mapData[userInfo->shardDepth],
                                                    entryDataLength, 2);
@@ -59,7 +59,7 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
         if (userInfo->indexType == IndexTypeCorners ||
             userInfo->indexType == IndexTypeEdgeAll) {
             if (entry[entryDataLength - 2] < depth) return;
-            if (memcmp(&entry[entryDataLength - 2], &mapData[mapDataSize], 2) == 0) return;
+            if (memcmp(&entry[entryDataLength - 2], &mapData[indexCount], 2) == 0) return;
         } else {
             if (entry[entryDataLength - 1] == maxDepth && depth == maxDepth) return;
         }
@@ -106,7 +106,7 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                              deeperCube,
                              operations,
                              root,
-                             mapDataSize);
+                             indexCount);
     }
     free(nextPrevious);
     rubiks_map_free(deeperCube);

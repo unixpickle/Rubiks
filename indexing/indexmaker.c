@@ -3,7 +3,7 @@
 
 void writeConfigurations(FILE * file, CCTableNode * node, CCUserInfo * info);
 
-int main (int argc, const char * argv[]) {
+int main(int argc, const char * argv[]) {
 	const char * outputFile = NULL;
 	int depth = 0;
 	if (argc != 4) {
@@ -19,43 +19,27 @@ int main (int argc, const char * argv[]) {
 	depth = atoi(argv[2]);
 	const char * subproblem = argv[3];
 
-
     CCUserInfo info;
-    info.indexTableDepth = 5; // provides a good split
-	if (strcmp(subproblem, "corners") == 0) {
-    	info.significantIndexCount = 24;
-    	info.significantIndices = CubeCornerIndices;
-        info.discardBySignificant = 1;
-	} else if (strcmp(subproblem, "edgefront") == 0) {
-		printf("performing front edge search\n");
-		info.significantIndexCount = 12;
-		info.significantIndices = CubeFrontIndices;
-        info.discardBySignificant = 0;
-	} else if (strcmp(subproblem, "edgeback") == 0) {
-		info.significantIndexCount = 12;
-		info.significantIndices = CubeBackIndices;
-        info.discardBySignificant = 0;
-    } else if (strcmp(subproblem, "edgeall") == 0) {
-        unsigned char indices[24];
-        memcpy(indices, CubeBackIndices, 12);
-        memcpy(&indices[12], CubeFrontIndices, 12);
-        info.significantIndexCount = 24;
-        info.significantIndices = indices;
-        info.discardBySignificant = 1;
-	} else {
-		fprintf(stderr, "Unknown subproblem.\n");
-		return 1;
-	}
-	StickerMap * map = sticker_map_identity();
+    info.shardDepth = 5; // provides a good split
+    info.indexType = index_type_from_string(subproblem);
+    if (info.indexType == IndexTypeUnknown) {
+        fprintf(stderr, "error: unknown subproblem %s\n", subproblem);
+    }
+	RubiksMap * map = rubiks_map_new_identity();
     info.maximumDepth = depth;
-    info.baseMap = map;
-	CCTableNode * node = cc_compute_table(info);
-	sticker_map_free(map);
+    info.identity = map;
+	ShardNode * node = cc_compute_table(info);
+	rubiks_map_free(map);
 	printf("saving results...\n");
     
 	FILE * fp = fopen(outputFile, "w");
-	writeConfigurations(fp, node, &info);
+	index_file_write(info.indexType,
+                     index_type_data_size(info.indexType) + 1,
+                     index_type_data_size(info.indexType) + 2,
+                     info.maximumDepth, node, output);
 	fclose(fp);
+    
+    shard_node_free(node);
 	return 0;
 }
 

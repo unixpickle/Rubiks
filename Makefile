@@ -1,10 +1,10 @@
 main: brutesolve facesolve
 
 brutesolve: representation_build cubesearch.o
-	gcc -Irepresentation -O2 brutesolve.c cubesearch.o representation/*.o -o brutesolve -lpthread
+	gcc -Irepresentation -O2 brutesolve.c cubesearch.o representation/cube.o -o brutesolve -lpthread
 
 facesolve: representation_build cubesearch.o
-	gcc -Irepresentation -O2 facesolve.c cubesearch.o representation/*.o -o facesolve -lpthread
+	gcc -Irepresentation -O2 facesolve.c cubesearch.o representation/cube.o -o facesolve -lpthread
 
 indexing_build: representation_build
 	cd indexing && make

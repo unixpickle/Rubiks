@@ -1,23 +1,19 @@
-main: indexmaker cornergen tableformat tableformat2
+main: indexmaker
 
 indexmaker: configcounter.o
-	gcc configcounter.o ../representation/stickermap.o indexmaker.c -o indexmaker -I../representation
+	gcc configcounter.o ../representation/cube.o indexmaker.c -o indexmaker -I../representation
 
-cornergen: cornergen.c
-	gcc cornergen.c ../representation/stickermap.o -o cornergen -I../representation
+configcounter.o: configcounter.c shard.o index.o
+	gcc -c configcounter.c -I../representation -o _configcounter.o
+	ld -r shard.o index.o _configcounter.o -o configcounter.o
+	rm _configcounter.o
 
-tableformat: tableformat.c
-	gcc -D_FILE_OFFSET_BITS=64 tableformat.c -o tableformat
+shard.o: shard.c
+	gcc -c shard.c -I../representation
 
-tableformat2: tableformat2.c
-	gcc -D_FILE_OFFSET_BITS=64 tableformat2.c ../representation/symmetry.o -o tableformat2 -I../representation
-
-configcounter.o: configcounter.c
-	gcc -c configcounter.c -I../representation
+index.o: index.c
+	gcc -c index.c -I../representation
 
 clean:
 	rm *.o
 	rm indexmaker
-	rm cornergen
-	rm tableformat
-	rm tableformat2

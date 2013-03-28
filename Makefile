@@ -1,10 +1,13 @@
-main: brutesolve facesolve
+main: legacy_build test_build korfsolver_build
 
-brutesolve: representation_build cubesearch.o
-	gcc -Irepresentation -O2 brutesolve.c cubesearch.o representation/cube.o -o brutesolve -lpthread
+legacy_build: representation_build
+	cd legacy && make
 
-facesolve: representation_build cubesearch.o
-	gcc -Irepresentation -O2 facesolve.c cubesearch.o representation/cube.o -o facesolve -lpthread
+test_build: indexing_build
+	cd test && make
+
+korfsolver_build: indexing_build
+	cd korfsolver && make
 
 indexing_build: representation_build
 	cd indexing && make
@@ -12,12 +15,10 @@ indexing_build: representation_build
 representation_build:
 	cd representation && make
 
-cubesearch.o: cubesearch.c representation_build
-	gcc -O2 -c cubesearch.c -Irepresentation -lpthread
-
 clean:
-	rm *.o
 	rm brutesolve
 	rm facesolve
 	cd representation && make clean
 	cd indexing && make clean
+	cd korfsolver && make clean
+	cd test && make clean

@@ -1,11 +1,8 @@
 solvesearch: heuristic.o
-	gcc -O2 solvesearch.c heuristic.o cubeindex.o ../cube.o ../rubiksmap.o -o solvesearch -I.. -lpthread
+	gcc -O2 solvesearch.c heuristic.o ../representation/cube.o ../indexing/index.o -o solvesearch -I../representation -I../indexing -lpthread
 
-heuristic.o: cubeindex.o heuristic.c
-	gcc -O2 -c heuristic.c -I..
-
-cubeindex.o: cubeindex.c
-	gcc -O2 -c cubeindex.c -I..
+heuristic.o: heuristic.c
+	gcc -O2 -c heuristic.c -I../representation -I../indexing
 
 clean:
 	rm *.o

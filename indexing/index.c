@@ -51,6 +51,47 @@ void index_file_write(IndexType it,
                            writeSize);
 }
 
+ShardNode * index_file_read(const char * path,
+                            IndexType * t,
+                            unsigned char * moveMax) {
+    // read the file header
+    FILE * fp = fopen(path, "r");
+    if (!fp) return NULL;
+    char buffer[4];
+    if (fread(buffer, 1, 4, fp) != 4) goto failure;
+    if (memcmp(buffer, "ANC2", 4) != 0) goto failure;
+    unsigned char typeChar = 0;
+    if (fread(&typeChar, 1, 1, fp) != 1) goto failure;
+    if (typeChar < 1 || typeChar > 4) goto failure; // not a known type
+    *t = typeChar;
+    if (fread(moveMax, 1, 1, fp) != 1) goto failure;
+    
+    // calculate the data size and entry count
+    int dataSize = index_type_data_size(*t) + 1;
+    fseek(fp, 0, SEEK_END);
+    long long offset = ftello(fp);
+    fseek(fp, 6, SEEK_SET);
+    int entryCount = (offset - 6) / dataSize;
+    // make sure that the file isn't miss-aligned
+    if (entryCount * dataSize + 6 != offset) goto failure;
+    
+    ShardNode * node = (ShardNode *)malloc(sizeof(ShardNode));
+    bzero(node, sizeof(ShardNode));
+    node->depthRemaining = 0;
+    node->nodeData = (unsigned char *)malloc(offset - 6);
+    node->nodeDataAlloc = entryCount;
+    node->nodeDataSize = entryCount;
+    if (fread(node->nodeData, 1, offset - 6, fp) != offset - 6) {
+        shard_node_free(node);
+        goto failure;
+    }
+    return node;
+    
+failure:
+    fclose(fp);
+    return NULL;
+}
+
 static void _index_recursive_write(FILE * output, ShardNode * node,
                                    unsigned char * data, int depth,
                                    int entrySize, int writeSize) {

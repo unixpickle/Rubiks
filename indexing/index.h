@@ -18,3 +18,6 @@ void index_file_write(IndexType it,
                       int maxDepth,
                       ShardNode * baseNode,
                       FILE * output);
+ShardNode * index_file_read(const char * path,
+                            IndexType * t,
+                            unsigned char * moveMax);

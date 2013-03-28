@@ -30,7 +30,7 @@ static int thread_should_return();
 
 int main(int argc, const char * argv[]) {
     if (argc != 5) {
-        fprintf(stderr, "Usage: %s <back.anci> <front.anci> <corners.anci> <max depth>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <back.anc2> <front.anc2> <corners.anc2> <max depth>\n", argv[0]);
         return 0;
     }
     const char * backFile = argv[1];
@@ -41,13 +41,13 @@ int main(int argc, const char * argv[]) {
         fprintf(stderr, "Failed to load index files.\n");
         return 0;
     }
-    RubiksMap * userMap = cube_user_input();
+    RubiksMap * userMap = rubiks_map_user_input();
     if (!userMap) {
         fprintf(stderr, "Invalid user input\n");
         return 0;
     }
     printf("\n\nNOTE: minimum moves: %d\n\n", heuristic_minimum_moves(userMap));
-    if (cube_is_solved(userMap)) {
+    if (rubiks_map_is_identity(userMap)) {
         rubiks_map_free(userMap);
         printf("You entered a solved cube.\n");
         return 0;
@@ -111,7 +111,7 @@ static void * search_thread_main(void * ptr) {
     int operationCount = state->operationCount;
     free(state);
     // perform first iteration here, then dispatch our main moves.
-    if (cube_is_solved(map)) {
+    if (rubiks_map_is_identity(map)) {
         thread_report_solved(NULL, 0);
         return NULL;
     }
@@ -150,7 +150,7 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
         nodeCount[0] = 0;
     }
     if (currentDepth == maxDepth) {
-        if (cube_is_solved(baseMap)) {
+        if (rubiks_map_is_identity(baseMap)) {
             thread_report_solved(previousMoves, currentDepth);
             return 1;
         }

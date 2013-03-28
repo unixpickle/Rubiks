@@ -48,8 +48,8 @@ int shard_node_base_add(ShardNode * node,
  * Lookup an entry in a base node
  */
 unsigned char * shard_node_base_lookup(ShardNode * node,
-                                         const unsigned char * data,
-                                         int entrySize,
-                                         int footerLength);
+                                       const unsigned char * data,
+                                       int entrySize,
+                                       int footerLength);
 
 #endif

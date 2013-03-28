@@ -164,6 +164,11 @@ RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers) {
             }
         }
         if (realIndex < 0) {
+            printf("not found: ");
+            for (j = 0; j < 3; j++) {
+                printf("%d ", realColors[j]);
+            }
+            printf("\n");
             rubiks_map_free(map);
             return NULL;
         }
@@ -187,6 +192,11 @@ RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers) {
             }
         }
         if (realIndex < 0) {
+            printf("not found edges (%d): ", i);
+            for (j = 0; j < 3; j++) {
+                printf("%d ", realColors[j]);
+            }
+            printf("\n");
             rubiks_map_free(map);
             return NULL;
         }

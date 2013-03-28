@@ -16,8 +16,7 @@ representation_build:
 	cd representation && make
 
 clean:
-	rm brutesolve
-	rm facesolve
+	cd legacy && make clean
 	cd representation && make clean
 	cd indexing && make clean
 	cd korfsolver && make clean

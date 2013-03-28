@@ -93,6 +93,10 @@ void rubiks_map_multiply(RubiksMap * out, RubiksMap * left, RubiksMap * right) {
     // multiply the corners first
     for (i = 0; i < 8; i++) {
         unsigned char leftPiece = left->pieces[i];
+		if (leftPiece == i) { // it is an identity piece
+			out->pieces[i] = right->pieces[i];
+			continue;
+		}
         int fromIndex = leftPiece & 7;
         unsigned char piece = right->pieces[fromIndex];
         int orientation = (piece >> 4) & 7;
@@ -103,6 +107,10 @@ void rubiks_map_multiply(RubiksMap * out, RubiksMap * left, RubiksMap * right) {
     // multiply the edges
     for (i = 0; i < 12; i++) {
         unsigned char leftPiece = left->pieces[i + 8];
+		if (leftPiece == i) { // identity piece
+			out->pieces[i + 8] = right->pieces[i + 8];
+			continue;
+		}
         int fromIndex = leftPiece & 15;
         unsigned char piece = right->pieces[fromIndex + 8];
         int orientation = (piece >> 4) & 7;

@@ -1,12 +1,12 @@
 main: cube.o
 
 cube.o: rubiksmap.o
-	gcc -c cube.c -o _cube.o
+	gcc -O2 -c cube.c -o _cube.o
 	ld -r _cube.o rubiksmap.o -o cube.o
 	rm _cube.o
 
 rubiksmap.o: stickermap.o symmetry.o
-	gcc -c rubiksmap.c -o _rubiksmap.o
+	gcc -O2 -c rubiksmap.c -o _rubiksmap.o
 	ld -r _rubiksmap.o stickermap.o symmetry.o -o rubiksmap.o
 	rm _rubiksmap.o
 

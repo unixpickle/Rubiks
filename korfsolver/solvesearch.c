@@ -1,7 +1,8 @@
-#include "heuristic.h"
-#include "cube.h"
 #include <pthread.h>
 #include <stdio.h>
+#include <time.h>
+#include "heuristic.h"
+#include "cube.h"
 
 typedef struct {
     int operationStart;
@@ -20,6 +21,7 @@ static pthread_mutex_t nodesExpandedLock = PTHREAD_MUTEX_INITIALIZER;
 static long long nodesExpanded = 0;
 
 static int threadCount = 0;
+static time_t startTime = 0;
 
 static void dispatch_search_threads(RubiksMap * baseMap, int maxDepth);
 static void * search_thread_main(void * ptr);
@@ -58,6 +60,8 @@ int main(int argc, const char * argv[]) {
     cube_print_solution_key();
     printf("\n");
 
+    startTime = time(NULL);
+
     int i;
     for (i = 1; i <= maxDepth && i < 21; i++) {
         printf("Trying %d depth...\n", i);
@@ -68,7 +72,7 @@ int main(int argc, const char * argv[]) {
             for (j = 0; j < solutionMovesCount; j++) {
                 printf("%d ", solutionMovesData[j]);
             }
-            printf("\n");
+            printf(" [time = %lld seconds]\n", (long long)(time(NULL) - startTime));
             foundSolutionFlag = 0;
         }
     }
@@ -145,7 +149,8 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
     if (nodeCount[0] > (1<<21)) {
         pthread_mutex_lock(&nodesExpandedLock);
         nodesExpanded += nodeCount[0];
-        printf("Expanded %lld nodes [depth = %d]\n", nodesExpanded, maxDepth);
+        printf("Expanded %lld nodes [depth = %d, time = %lld sec]\n",
+               nodesExpanded, maxDepth, (long long)(time(NULL) - startTime));
         pthread_mutex_unlock(&nodesExpandedLock);
         nodeCount[0] = 0;
     } else if (nodeCount[0] % (1<<18) == 0) { // periodically check

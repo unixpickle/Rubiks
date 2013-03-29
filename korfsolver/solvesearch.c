@@ -148,6 +148,8 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
         printf("Expanded %lld nodes [depth = %d]\n", nodesExpanded, maxDepth);
         pthread_mutex_unlock(&nodesExpandedLock);
         nodeCount[0] = 0;
+    } else if (nodeCount[0] % (1<<18) == 0) { // periodically check
+        if (thread_should_return()) return 1;
     }
     if (currentDepth == maxDepth) {
         if (rubiks_map_is_identity(baseMap)) {
@@ -179,7 +181,6 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
             return 1;
         }
     }
-    if (thread_should_return()) return 1;
     return 0;
 }
 

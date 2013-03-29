@@ -3,8 +3,6 @@
 #include <pthread.h>
 #include <stdio.h>
 
-#define kSolveSearchThreadCount 4
-
 typedef struct {
     int operationStart;
     int operationCount;
@@ -21,6 +19,8 @@ static RubiksMap ** operations;
 static pthread_mutex_t nodesExpandedLock = PTHREAD_MUTEX_INITIALIZER;
 static long long nodesExpanded = 0;
 
+static int threadCount = 0;
+
 static void dispatch_search_threads(RubiksMap * baseMap, int maxDepth);
 static void * search_thread_main(void * ptr);
 static int search_method_main(RubiksMap * baseMap, unsigned char * lastMoves, int currentDepth, int maxDepth, RubiksMap ** mapCache, long long * nodeCount);
@@ -29,14 +29,15 @@ static void thread_report_solved(const unsigned char * moves, int moveCount);
 static int thread_should_return();
 
 int main(int argc, const char * argv[]) {
-    if (argc != 5) {
-        fprintf(stderr, "Usage: %s <back.anc2> <front.anc2> <corners.anc2> <max depth>\n", argv[0]);
+    if (argc != 6) {
+        fprintf(stderr, "Usage: %s <back.anc2> <front.anc2> <corners.anc2> <max depth> <thread count>\n", argv[0]);
         return 0;
     }
     const char * backFile = argv[1];
     const char * frontFile = argv[2];
     const char * cornerFile = argv[3];
     int maxDepth = atoi(argv[4]);
+    threadCount = atoi(argv[5]);
     if (!heuristic_load_index_files(cornerFile, frontFile, backFile)) {
         fprintf(stderr, "Failed to load index files.\n");
         return 0;
@@ -82,8 +83,7 @@ int main(int argc, const char * argv[]) {
 }
 
 static void dispatch_search_threads(RubiksMap * baseMap, int maxDepth) {
-    int threadCount = kSolveSearchThreadCount;
-    if (threadCount > 18) threadCount = 0;
+    if (threadCount > 18) threadCount = 18;
     int threadOperations = 18 / threadCount;
     int i;
     pthread_t * threads = (pthread_t *)malloc(sizeof(pthread_t) * threadCount);

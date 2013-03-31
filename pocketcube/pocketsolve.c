@@ -59,7 +59,9 @@ int main(int argc, const char * argv[]) {
     for (i = 0; i <= 11; i++) {
         printf("Trying depth %d\n", i);
         if (search_main(map, 0, i, moves)) {
+            printf("Found solution: ");
             cube_print_standard_solution(moves, i);
+            printf("\n");
         }
     }
     

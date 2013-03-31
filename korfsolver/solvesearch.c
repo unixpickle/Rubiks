@@ -64,7 +64,9 @@ int main(int argc, const char * argv[]) {
         printf("Trying %d depth...\n", i);
         dispatch_search_threads(userMap, i);
         if (foundSolutionFlag) {
+            printf("Found solution: ");
             cube_print_standard_solution(solutionMovesData, solutionMovesCount);
+            printf(" [%lld seconds]\n", (long long)(time(NULL) - startTime));
             break;
         }
     }

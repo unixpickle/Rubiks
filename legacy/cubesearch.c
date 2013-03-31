@@ -108,7 +108,9 @@ static void * _solution_search_method(void * _argument) {
             sync->done = 1;
             pthread_mutex_unlock(&sync->lock);
             if (!shouldTerminate) {
+                printf("Found solution: ");
                 cube_print_standard_solution(indices, length);
+                printf("\n");
             }
             break;
         }

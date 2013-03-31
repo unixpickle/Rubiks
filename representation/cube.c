@@ -24,11 +24,9 @@ void cube_print_standard_solution(const unsigned char * moves, int length) {
         "U'", "D", "R", "L'", "F'", "B",
         "U2", "D2", "R2", "L2", "F2", "B2"
     };
-    printf("Found solution: ");
     int i;
     for (i = 0; i < length; i++) {
         printf("%s%s", (i == 0 ? "" : " "), names[moves[i]]);
     }
-    printf("\n");
 }
 

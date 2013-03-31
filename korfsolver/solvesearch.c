@@ -73,6 +73,7 @@ int main(int argc, const char * argv[]) {
                 printf("%d ", solutionMovesData[j]);
             }
             printf(" [time = %lld seconds]\n", (long long)(time(NULL) - startTime));
+			break;
             foundSolutionFlag = 0;
         }
     }

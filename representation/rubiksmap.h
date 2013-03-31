@@ -5,19 +5,11 @@
 #include <string.h>
 #include <unistd.h>
 #include "stickermap.h"
+#include "operations.h"
 
 typedef struct {
     unsigned char pieces[20];
 } RubiksMap;
-
-typedef enum {
-    RubiksOperationTop = 0,
-    RubiksOperationBottom = 1,
-    RubiksOperationRight = 2,
-    RubiksOperationLeft = 3,
-    RubiksOperationFront = 4,
-    RubiksOperationBack = 5
-} RubiksOperation;
 
 RubiksMap * rubiks_map_user_input();
 RubiksMap * rubiks_map_new_identity();

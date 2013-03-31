@@ -1,6 +1,4 @@
-#include "rubiksmap.h"
-
-const unsigned char CornerPieces[8][3] = {
+static const unsigned char CornerPieces[8][3] = {
     {6,4,2}, // 000
     {6,4,1}, // 001
     {6,3,2}, // 010
@@ -10,7 +8,7 @@ const unsigned char CornerPieces[8][3] = {
     {5,3,2}, // 110
     {5,3,1}  // 111
 };
-const unsigned char EdgePieces[12][3] = {
+static const unsigned char EdgePieces[12][3] = {
     {0,3,1},
     {5,0,1},
     {0,4,1},
@@ -24,7 +22,7 @@ const unsigned char EdgePieces[12][3] = {
     {6,4,0},
     {5,4,0}
 };
-const unsigned char CornerIndices[8][3] = {
+static const unsigned char CornerIndices[8][3] = {
     {48, 9, 8},   // 000
     {36, 11, 0},  // 001
     {50, 5, 6},   // 010
@@ -34,7 +32,7 @@ const unsigned char CornerIndices[8][3] = {
     {51, 29, 30}, // 110
     {39, 27, 26}, // 111
 };
-const char EdgeIndices[12][3] = {
+static const char EdgeIndices[12][3] = {
     {-1, 15, 14},
     {40, -1, 25},
     {-1, 23, 12},

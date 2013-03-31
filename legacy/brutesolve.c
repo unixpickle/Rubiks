@@ -19,7 +19,6 @@ int main (int argc, const char * argv[]) {
         printf("you input a solved cube!\n");
         goto finishMain;
     }
-    cube_print_solution_key();
     printf("\n\n");
     for (i = 1; i < 21; i++) {
         findSolutions(i, operations, input, rubiks_map_is_identity);

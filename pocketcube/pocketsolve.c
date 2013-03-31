@@ -39,7 +39,7 @@ int main(int argc, const char * argv[]) {
     
     printf("\ncube data (hex): ");
     for (i = 0; i < 8; i++) {
-        printf("%02x", map->pieces[i]);
+        printf(" %02x", map->pieces[i]);
     }
     printf("\n\n");
     
@@ -55,18 +55,11 @@ int main(int argc, const char * argv[]) {
         operations[i + 12] = doubleTurn;
     }
     
-    cube_print_solution_key();
-    printf("----------------------------\n");
-    
     char moves[12];
     for (i = 0; i <= 11; i++) {
         printf("Trying depth %d\n", i);
         if (search_main(map, 0, i, moves)) {
-            printf("Found solution: ");
-            for (j = 0; j < i; j++) {
-                printf("%d ", moves[j]);
-            }
-            printf("\n");
+            cube_print_standard_solution(moves, i);
         }
     }
     

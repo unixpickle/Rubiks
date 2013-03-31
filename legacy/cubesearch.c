@@ -108,11 +108,7 @@ static void * _solution_search_method(void * _argument) {
             sync->done = 1;
             pthread_mutex_unlock(&sync->lock);
             if (!shouldTerminate) {
-                printf("solved in %d moves: ", length);
-                for (i = 0; i < length; i++) {
-                    printf("%d ", indices[i]);
-                }
-                printf("\n");
+                cube_print_standard_solution(indices, length);
             }
             break;
         }

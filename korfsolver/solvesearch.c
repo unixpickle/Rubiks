@@ -57,9 +57,6 @@ int main(int argc, const char * argv[]) {
     }
     operations = cube_standard_face_turns();
 
-    cube_print_solution_key();
-    printf("\n");
-
     startTime = time(NULL);
 
     int i;
@@ -67,14 +64,8 @@ int main(int argc, const char * argv[]) {
         printf("Trying %d depth...\n", i);
         dispatch_search_threads(userMap, i);
         if (foundSolutionFlag) {
-            printf("Found solution: ");
-            int j;
-            for (j = 0; j < solutionMovesCount; j++) {
-                printf("%d ", solutionMovesData[j]);
-            }
-            printf(" [time = %lld seconds]\n", (long long)(time(NULL) - startTime));
-			break;
-            foundSolutionFlag = 0;
+            cube_print_standard_solution(solutionMovesData, solutionMovesCount);
+            break;
         }
     }
     

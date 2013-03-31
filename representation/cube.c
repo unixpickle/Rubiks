@@ -18,11 +18,17 @@ RubiksMap ** cube_standard_face_turns() {
     return operations;
 }
 
-void cube_print_solution_key() {
-    printf(" 0 - top     6 - top inverse     12 - top double\n");
-    printf(" 1 - bottom  7 - bottom inverse  13 - bottom double\n");
-    printf(" 2 - right   8 - right inverse   14 - right double\n");
-    printf(" 3 - left    9 - left inverse    15 - left double\n");
-    printf(" 4 - front   10 - front inverse  16 - front double\n");
-    printf(" 5 - back    11 - back inverse   17 - back double\n");
+void cube_print_standard_solution(const unsigned char * moves, int length) {
+    const char * names[] = {
+        "U", "D'", "R'", "L", "F", "B'",
+        "U'", "D", "R", "L'", "F'", "B",
+        "U2", "D2", "R2", "L2", "F2", "B2"
+    };
+    printf("Found solution: ");
+    int i;
+    for (i = 0; i < length; i++) {
+        printf("%s%s", (i == 0 ? "" : " "), names[moves[i]]);
+    }
+    printf("\n");
 }
+

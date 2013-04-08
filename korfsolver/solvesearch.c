@@ -12,6 +12,7 @@ typedef struct {
 } ThreadState;
 
 static pthread_mutex_t foundSolutionLock = PTHREAD_MUTEX_INITIALIZER;
+static int findMultipleSolutions = 0;
 static int foundSolutionFlag = 0;
 static unsigned char solutionMovesData[20];
 static int solutionMovesCount;
@@ -31,9 +32,16 @@ static void thread_report_solved(const unsigned char * moves, int moveCount);
 static int thread_should_return();
 
 int main(int argc, const char * argv[]) {
-    if (argc != 6) {
-        fprintf(stderr, "Usage: %s <back.anc2> <front.anc2> <corners.anc2> <max depth> <thread count>\n", argv[0]);
+    int i;
+    if (argc < 6) {
+        fprintf(stderr, "Usage: %s <back.anc2> <front.anc2> <corners.anc2> <max depth> <thread count> [--multiple]\n", argv[0]);
         return 0;
+    }
+    // read the extra arguments
+    for (i = 6; i < argc; i++) {
+        if (strcmp(argv[i], "--multiple") == 0) {
+            findMultipleSolutions = 1;
+        }
     }
     const char * backFile = argv[1];
     const char * frontFile = argv[2];
@@ -59,16 +67,10 @@ int main(int argc, const char * argv[]) {
 
     startTime = time(NULL);
 
-    int i;
     for (i = 1; i <= maxDepth && i < 21; i++) {
         printf("Trying %d depth...\n", i);
         dispatch_search_threads(userMap, i);
-        if (foundSolutionFlag) {
-            printf("Found solution: ");
-            cube_print_standard_solution(solutionMovesData, solutionMovesCount);
-            printf(" [%lld seconds]\n", (long long)(time(NULL) - startTime));
-            break;
-        }
+        if (foundSolutionFlag) break;
     }
     
     for (i = 0; i < 18; i++) {
@@ -153,7 +155,7 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
     if (currentDepth == maxDepth) {
         if (rubiks_map_is_identity(baseMap)) {
             thread_report_solved(previousMoves, currentDepth);
-            return 1;
+            if (!findMultipleSolutions) return 1;
         }
         return 0;
     }
@@ -185,6 +187,13 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
 
 static void thread_report_solved(const unsigned char * moves, int moveCount) {
     pthread_mutex_lock(&foundSolutionLock);
+    printf("Found solution: ");
+    cube_print_standard_solution(moves, moveCount);
+    printf(" [%lld seconds]\n", (long long)(time(NULL) - startTime));
+    if (findMultipleSolutions) {
+        pthread_mutex_unlock(&foundSolutionLock);
+        return;
+    }
     if (!foundSolutionFlag) {
         foundSolutionFlag = 1;
         if (moveCount > 0) memcpy(solutionMovesData, moves, moveCount);
@@ -194,6 +203,7 @@ static void thread_report_solved(const unsigned char * moves, int moveCount) {
 }
 
 static int thread_should_return() {
+    if (findMultipleSolutions) return 0;
     int flag;
     pthread_mutex_lock(&foundSolutionLock);
     flag = foundSolutionFlag;

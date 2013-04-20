@@ -171,9 +171,9 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
                 continue;
             }
         }
-        if (lastMove >= 12 && i == lastMove) continue;
-        if (lastMove < 12 && i % 6 == lastMove % 6 && i != lastMove) {
-            // we are making an inverse of the previous move
+        if (i == lastMove) continue;
+        if (i % 6 == lastMove % 6) {
+            // we are making another turn on the same face :(
             continue;
         }
         previousMoves[currentDepth] = (unsigned char)i;

@@ -45,8 +45,8 @@ void symmetry_operation_perform(int op, unsigned char * data) {
     unsigned char el3 = data[2];
     switch (op) {
         case 1:
-            data[1] = el2;
-            data[0] = el1;
+            data[1] = el1;
+            data[0] = el2;
             break;
         case 2:
             data[1] = el3;
@@ -65,6 +65,8 @@ void symmetry_operation_perform(int op, unsigned char * data) {
             data[2] = el1;
             data[0] = el2;
             data[1] = el3;
+            break;
+        default:
             break;
     }
 }

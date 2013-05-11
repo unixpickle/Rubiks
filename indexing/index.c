@@ -13,12 +13,15 @@ IndexType index_type_from_string(const char * str) {
         return IndexTypeEdgeAll;
     } else if (strcmp(str, "corners") == 0) {
         return IndexTypeCorners;
+    } else if (strcmp(str, "eo") == 0) {
+        return IndexTypeEO;
     } else return IndexTypeUnknown;
 }
 
 int index_type_data_size(IndexType it) {
     if (it == IndexTypeEdgeAll) return 12;
     if (it == IndexTypeCorners) return 8;
+    if (it == IndexTypeEO) return 2;
     return 6;
 }
 
@@ -30,7 +33,11 @@ void index_type_copy_data(IndexType it, unsigned char * data, RubiksMap * map) {
     } else if (it == IndexTypeEdgeBack) {
         memcpy(data, &map->pieces[14], 6);
     } else if (it == IndexTypeEdgeAll) {
-        memcpy(data, &map->pieces[8], 6);
+        memcpy(data, &map->pieces[8], 12);
+    } else if (it == IndexTypeEO) {
+        uint16_t buffer = rubiks_map_edge_orientations(map);
+        data[0] = buffer & 0xff;
+        data[1] = (buffer >> 8) & 0xff;
     }
 }
 
@@ -62,7 +69,7 @@ ShardNode * index_file_read(const char * path,
     if (memcmp(buffer, "ANC2", 4) != 0) goto failure;
     unsigned char typeChar = 0;
     if (fread(&typeChar, 1, 1, fp) != 1) goto failure;
-    if (typeChar < 1 || typeChar > 4) goto failure; // not a known type
+    if (typeChar < 1 || typeChar > 5) goto failure; // not a known type
     *t = typeChar;
     if (fread(moveMax, 1, 1, fp) != 1) goto failure;
     

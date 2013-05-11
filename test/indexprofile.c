@@ -14,6 +14,7 @@ int main(int argc, const char * argv[]) {
     ShardNode * index = index_file_read(file, &type, &maxMoves);
     if (!index) {
         fprintf(stderr, "error: failed to load file.\n");
+        return 1;
     }
     const char * indexTypeName = "unknown";
     switch (type) {
@@ -28,6 +29,9 @@ int main(int argc, const char * argv[]) {
             break;
         case IndexTypeEdgeAll:
             indexTypeName = "edgeall";
+            break;
+        case IndexTypeEO:
+            indexTypeName == "eo";
             break;
         default:
             break;

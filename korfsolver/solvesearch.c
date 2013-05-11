@@ -12,10 +12,15 @@ typedef struct {
 } ThreadState;
 
 static pthread_mutex_t foundSolutionLock = PTHREAD_MUTEX_INITIALIZER;
-static int findMultipleSolutions = 0;
 static int foundSolutionFlag = 0;
 static unsigned char solutionMovesData[20];
 static int solutionMovesCount;
+
+// command line arguments
+static int findMultipleSolutions = 0;
+static int independentFacesCount = 6;
+static int startingDepth = 1;
+static int doubleOnly = 0;
 
 static RubiksMap ** operations;
 static pthread_mutex_t nodesExpandedLock = PTHREAD_MUTEX_INITIALIZER;
@@ -31,16 +36,33 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * lastMoves, in
 static void thread_report_solved(const unsigned char * moves, int moveCount);
 static int thread_should_return();
 
+static int moves_fit_filters(unsigned char * moves, int numMoves);
+
 int main(int argc, const char * argv[]) {
     int i;
     if (argc < 6) {
-        fprintf(stderr, "Usage: %s <back.anc2> <front.anc2> <corners.anc2> <max depth> <thread count> [--multiple]\n", argv[0]);
+        fprintf(stderr, "Usage: %s <back.anc2> <front.anc2> <corners.anc2> <max depth>\n\
+         <thread count> [--multiple] [--faces_max=n] [--mindepth=n] [--double_only]\n", argv[0]);
         return 0;
     }
     // read the extra arguments
     for (i = 6; i < argc; i++) {
         if (strcmp(argv[i], "--multiple") == 0) {
             findMultipleSolutions = 1;
+        } else if (strcmp(argv[i], "--double_only") == 0) {
+            doubleOnly = 1;
+        } else if (strncmp(argv[i], "--faces_max=", 12) == 0) {
+            if (strlen(argv[i]) > 12) {
+                independentFacesCount = atoi(&argv[i][12]);
+            } else {
+                fprintf(stderr, "warning: invalid --faces_max argument given\n");
+            }
+        } else if (strncmp(argv[i], "--mindepth=", 11) == 0) {
+            if (strlen(argv[i]) > 11) {
+                startingDepth = atoi(&argv[i][11]);
+            } else {
+                fprintf(stderr, "warning: invalid --mindepth argument given\n");
+            }
         }
     }
     const char * backFile = argv[1];
@@ -48,6 +70,10 @@ int main(int argc, const char * argv[]) {
     const char * cornerFile = argv[3];
     int maxDepth = atoi(argv[4]);
     threadCount = atoi(argv[5]);
+    if (threadCount == 0 || maxDepth == 0) {
+        fprintf(stderr, "error: invalid maxDepth or threadCount\n");
+        return 0;
+    }
     if (!heuristic_load_index_files(cornerFile, frontFile, backFile)) {
         fprintf(stderr, "Failed to load index files.\n");
         return 0;
@@ -67,7 +93,7 @@ int main(int argc, const char * argv[]) {
 
     startTime = time(NULL);
 
-    for (i = 1; i <= maxDepth && i < 21; i++) {
+    for (i = startingDepth; i <= maxDepth && i < 21; i++) {
         printf("Trying %d depth...\n", i);
         dispatch_search_threads(userMap, i);
         if (foundSolutionFlag) break;
@@ -154,8 +180,10 @@ static int search_method_main(RubiksMap * baseMap, unsigned char * previousMoves
     }
     if (currentDepth == maxDepth) {
         if (rubiks_map_is_identity(baseMap)) {
-            thread_report_solved(previousMoves, currentDepth);
-            if (!findMultipleSolutions) return 1;
+            if (moves_fit_filters(previousMoves, currentDepth)) {
+                thread_report_solved(previousMoves, currentDepth);
+                if (!findMultipleSolutions) return 1;
+            }
         }
         return 0;
     }
@@ -211,3 +239,55 @@ static int thread_should_return() {
     return flag;
 }
 
+static int moves_fit_filters(unsigned char * moves, int numMoves) {
+    if (doubleOnly) {
+        int i;
+        for (i = 0; i < numMoves; i++) {
+            if (moves[i] < 12) return 0;
+        }
+    }
+    if (independentFacesCount >= 6) return 1;
+    // check the axis of every move and count how many independent faces/axes there are
+    char facesFlags = 0;
+    int i;
+    int numAxes = 0;
+    int numCollisions = 0;
+    // the number of allowed independent axes
+    int allowedAxes = 2;
+    if (independentFacesCount == 1) {
+        allowedAxes = 1;
+    } else if (independentFacesCount > 4) {
+        allowedAxes = 3;
+    }
+    // the number of axes which can be shared
+    int allowedCollisions = 3;
+    if (independentFacesCount < 3) {
+        allowedCollisions = 0;
+    } else if (independentFacesCount == 3) {
+        allowedCollisions = 1;
+    } else if (independentFacesCount < 6) {
+        allowedCollisions = 2;
+    }
+    for (i = 0; i < numMoves; i++) {
+        char flag = 1 << (moves[i] % 6);
+        // mask the other turn on this axis
+        char otherFlag = flag;
+        if ((moves[i] % 6) % 2 == 0) {
+            otherFlag <<= 1;
+        } else {
+            otherFlag >>= 1;
+        }
+        if ((facesFlags & flag) != 0) continue;
+        facesFlags |= flag;
+        // if the other face on this axis has been used, this is a collision
+        if ((facesFlags & otherFlag) != 0) {
+            numCollisions++;
+        } else {
+            numAxes++;
+        }
+        if (numAxes > allowedAxes || numCollisions > allowedCollisions) {
+            return 0;
+        }
+    }
+    return 1;
+}

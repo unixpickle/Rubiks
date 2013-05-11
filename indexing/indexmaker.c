@@ -10,7 +10,8 @@ int main(int argc, const char * argv[]) {
 - 'corners' - the corner subproblem\n\
 - 'edgefront' - the front and top edge pieces\n\
 - 'edgeback' - the back and bottom edge pieces\n\
-- 'edgeall' - all of the twelve edges\n\n", argv[0]);
+- 'edgeall' - all of the twelve edges\n\
+- 'eo' - all of the edges' orientations\n\n", argv[0]);
         return 1;
     }
     outputFile = argv[1];
@@ -18,8 +19,8 @@ int main(int argc, const char * argv[]) {
     const char * subproblem = argv[3];
 
     CCUserInfo info;
-    info.shardDepth = 3; // provides a good split
     info.indexType = index_type_from_string(subproblem);
+    info.shardDepth = 3; // provides a good split
     if (info.indexType == IndexTypeUnknown) {
         fprintf(stderr, "error: unknown subproblem %s\n", subproblem);
     }

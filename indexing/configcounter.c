@@ -15,6 +15,9 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                  int indexCount);
 
 ShardNode * cc_compute_table(CCUserInfo info) {
+    if (info.shardDepth > index_type_data_size(info.indexType)) {
+        info.shardDepth = index_type_data_size(info.indexType) - 2;
+    }
     info.nodesExpanded = 0;
     ShardNode * baseNode = shard_node_new(info.shardDepth);
     RubiksMap ** operations = cube_standard_face_turns();
@@ -57,7 +60,8 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
     // if the information exists, check if we are done with this node
     if (entry) {
         if (userInfo->indexType == IndexTypeCorners ||
-            userInfo->indexType == IndexTypeEdgeAll) {
+            userInfo->indexType == IndexTypeEdgeAll || 
+            userInfo->indexType == IndexTypeEO) {
             if (entry[entryDataLength - 2] < depth) return;
             if (memcmp(&entry[entryDataLength - 2], &mapData[indexCount], 2) == 0) return;
         } else {
@@ -82,6 +86,7 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
     RubiksMap * deeperCube = rubiks_map_new_identity();
     char lastMove = depth > 0 ? previousMoves[depth - 1] : -1;
     for (i = 0; i < kConfigCounterMoveCount; i++) {
+        
         // remove redundant commutative chains
         if (depth > 0) {
             if (lastMove % 2 == 1) {

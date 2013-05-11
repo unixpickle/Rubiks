@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 #include "stickermap.h"
 #include "operations.h"
 
@@ -18,6 +19,7 @@ void rubiks_map_copy_into(RubiksMap * out, const RubiksMap * input);
 void rubiks_map_multiply(RubiksMap * out, RubiksMap * left, RubiksMap * right);
 void rubiks_map_operate(RubiksMap * out, RubiksMap * map, RubiksOperation o);
 int rubiks_map_is_identity(RubiksMap * map);
+uint16_t rubiks_map_edge_orientations(RubiksMap * map);
 void rubiks_map_free(RubiksMap * map);
 
 RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers);

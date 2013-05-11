@@ -6,7 +6,8 @@ typedef enum {
     IndexTypeEdgeFront = 1,
     IndexTypeEdgeBack = 2,
     IndexTypeEdgeAll = 3,
-    IndexTypeCorners = 4
+    IndexTypeCorners = 4,
+    IndexTypeEO = 5
 } IndexType;
 
 IndexType index_type_from_string(const char * str);

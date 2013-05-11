@@ -144,6 +144,35 @@ int rubiks_map_is_identity(RubiksMap * map) {
     return (memcmp(map->pieces, _IdentityMapData, 20) == 0);
 }
 
+uint16_t rubiks_map_edge_orientations(RubiksMap * map) {
+    uint16_t bitArray = 0;
+    int i;
+    for (i = 0; i < 12; i++) {
+        unsigned char piece = map->pieces[i + 8];
+        const char * pieceIndices = EdgeIndices[i];
+        unsigned char colors[3];
+        memcpy(colors, EdgePieces[piece & 15], 3);
+        symmetry_operation_perform((piece >> 4) & 7, colors);
+        // check the edge orientation
+        uint16_t mask = 1 << i;
+        int isTopBottomEdge = 0;
+        int sigColor = colors[1] == 0 ? colors[2] : colors[1];
+        int j;
+        for (j = 0; j < 3; j++) {
+            if (colors[j] == 3 || colors[j] == 4) {
+                isTopBottomEdge = 1;
+            }
+        }
+        // two conditions under which it is a good edge
+        if (isTopBottomEdge && (sigColor == 3 || sigColor == 4)) {
+            bitArray |= mask;
+        } else if (!isTopBottomEdge && (sigColor == 1 || sigColor == 2)) {
+            bitArray |= mask;
+        }
+    }
+    return bitArray;
+}
+
 void rubiks_map_free(RubiksMap * map) {
     free(map);
 }

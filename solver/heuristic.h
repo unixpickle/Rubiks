@@ -1,3 +1,6 @@
+#ifndef __HEURISTIC_H__
+#define __HEURISTIC_H__
+
 #include "indexing/index.h"
 #include "representation/rubiksmap.h"
 
@@ -22,3 +25,5 @@ void heuristic_list_add(HeuristicList * list, HeuristicTable * heuristic);
 int heuristic_list_lookup(HeuristicList * list, RubiksMap * map);
 int heuristic_list_exceeds(HeuristicList * list, RubiksMap * map, int value);
 void heuristic_list_free(HeuristicList * list);
+
+#endif

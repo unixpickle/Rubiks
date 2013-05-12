@@ -29,3 +29,4 @@ int rubikspl_is_goal(void * data, void * object);
 int rubikspl_accepts_sequence(void * data, unsigned char * moves, int count);
 int rubikspl_heuristic_exceeds(void * data, void * object, int maxMoves);
 void rubikspl_report_solution(void * data, unsigned char * moves, int count);
+void rubikspl_report_progress(void * data, time_t duration, long long expandedCount, int depth);

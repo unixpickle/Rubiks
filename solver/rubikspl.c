@@ -145,6 +145,11 @@ void rubikspl_report_solution(void * data, unsigned char * moves, int count) {
     printf("\n");
 }
 
+void rubikspl_report_progress(void * data, time_t duration, long long expandedCount, int depth) {
+    printf("Expanded %lld nodes [depth = %d, time = %lld seconds]\n", 
+           expandedCount, depth, (long long)duration);
+}
+
 static int _rubikspl_verify_faceturns(RubiksPl * pl, unsigned char * moves, int numMoves) {
     int independentFacesCount = pl->maxIndepFaces;
     if (independentFacesCount >= 6) return 1;

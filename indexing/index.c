@@ -1,27 +1,33 @@
 #include "index.h"
 
+static const char * SubproblemNames[] = {"unknown", "edgefront", "edgeback", "edgeall",
+                                         "corners", "eo",
+                                         "block0", "block1", "block2", "block3", "block4",
+                                         "block5", "block6", "block7", "block8"};
+
 static void _index_recursive_write(FILE * output, ShardNode * node,
                                    unsigned char * data, int depth,
                                    int entrySize, int writeSize);
 
 IndexType index_type_from_string(const char * str) {
-    if (strcmp(str, "edgefront") == 0) {
-        return IndexTypeEdgeFront;
-    } else if (strcmp(str, "edgeback") == 0) {
-        return IndexTypeEdgeBack;
-    } else if (strcmp(str, "edgeall") == 0) {
-        return IndexTypeEdgeAll;
-    } else if (strcmp(str, "corners") == 0) {
-        return IndexTypeCorners;
-    } else if (strcmp(str, "eo") == 0) {
-        return IndexTypeEO;
-    } else return IndexTypeUnknown;
+    int i;
+    for (i = 0; i < 14; i++) {
+        if (strcmp(str, SubproblemNames[i]) == 0) {
+            return i;
+        }
+    }
+    return IndexTypeUnknown;
+}
+
+const char * index_type_to_string(IndexType type) {
+    return SubproblemNames[type];
 }
 
 int index_type_data_size(IndexType it) {
     if (it == IndexTypeEdgeAll) return 12;
     if (it == IndexTypeCorners) return 8;
     if (it == IndexTypeEO) return 2;
+    if (it >= 6 && it <= 13) return 4;
     return 6;
 }
 
@@ -38,6 +44,29 @@ void index_type_copy_data(IndexType it, unsigned char * data, RubiksMap * map) {
         uint16_t buffer = rubiks_map_edge_orientations(map);
         data[0] = buffer & 0xff;
         data[1] = (buffer >> 8) & 0xff;
+    } else if (it >= 6 && it <= 13) {
+        bzero(data, 4);
+        int blockIndex = it - 6;
+        int i;
+        // find the block index corner
+        for (i = 0; i < 8; i++) {
+            if ((map->pieces[i] & 0xf) == blockIndex) {
+                data[0] = i;
+                data[0] |= map->pieces[i] & 0xf0;
+                break;
+            }
+        }
+        // find the block edges
+        for (i = 0; i < 12; i++) {
+            int j;
+            for (j = 0; j < 3; j++) {
+                int seeking = BlockEdgeIndices[blockIndex][j];
+                if ((map->pieces[i + 8] & 0xf) == seeking) {
+                    data[j + 1] = i;
+                    data[j + 1] |= map->pieces[i + 8] & 0xf0;
+                }
+            }
+        }
     }
 }
 

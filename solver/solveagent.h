@@ -1,3 +1,6 @@
+#ifndef __SOLVEAGENT_H__
+#define __SOLVEAGENT_H__
+
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -19,6 +22,8 @@ typedef struct {
     int (*heuristic_exceeds)(void * data, void * object, int maxMoves);
     // report a solution once it has been accepted
     void (*report_solution)(void * data, unsigned char * moves, int count);
+    // report the solve's progress
+    void (*report_progress)(void * data, time_t duration, long long expandedCount, int depth);
     
     // basic arguments
     void * userData;
@@ -29,7 +34,7 @@ typedef struct {
     
     // user-specific flags
     int multipleSolutions;
-    int verbosity; // 0 = none, 1 = nodes, 2 = time
+    int verbosity; // 0 = none, 1 = print updates
     
     // user-specific arguments
     long long progressIncrement;
@@ -37,3 +42,5 @@ typedef struct {
 } SAUserInfo;
 
 void sa_solve_main(SAUserInfo info);
+
+#endif

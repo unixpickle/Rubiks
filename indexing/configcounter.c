@@ -61,7 +61,8 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
     if (entry) {
         if (userInfo->indexType == IndexTypeCorners ||
             userInfo->indexType == IndexTypeEdgeAll || 
-            userInfo->indexType == IndexTypeEO) {
+            userInfo->indexType == IndexTypeEO || 
+            (userInfo->indexType >= 6 && userInfo->indexType <= 13)) {
             if (entry[entryDataLength - 2] < depth) return;
             if (memcmp(&entry[entryDataLength - 2], &mapData[indexCount], 2) == 0) return;
         } else {

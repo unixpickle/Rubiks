@@ -11,7 +11,8 @@ int main(int argc, const char * argv[]) {
 - 'edgefront' - the front and top edge pieces\n\
 - 'edgeback' - the back and bottom edge pieces\n\
 - 'edgeall' - all of the twelve edges\n\
-- 'eo' - all of the edges' orientations\n\n", argv[0]);
+- 'eo' - all of the edges' orientations\n\
+- 'block#' - 2x2x2 blocks numbered 0-7 (e.g. block3)\n\n", argv[0]);
         return 1;
     }
     outputFile = argv[1];
@@ -23,6 +24,7 @@ int main(int argc, const char * argv[]) {
     info.shardDepth = 3; // provides a good split
     if (info.indexType == IndexTypeUnknown) {
         fprintf(stderr, "error: unknown subproblem %s\n", subproblem);
+        exit(1);
     }
     RubiksMap * map = rubiks_map_new_identity();
     info.maximumDepth = depth;

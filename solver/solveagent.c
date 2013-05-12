@@ -23,6 +23,8 @@ typedef struct {
     // used by thread
     void ** mapCache;
     char * lastMoves;
+    
+    long long nodesExpanded;
 } SAThreadInfo;
 
 static void sa_dispatch_threads(const char * boundStep, SAUserInfo * info,
@@ -58,6 +60,7 @@ void sa_solve_main(SAUserInfo info) {
     for (i = info.minDepth; i <= info.maxDepth; i++) {
         printf("Trying %d move solutions...\n", i);
         sa_dispatch_threads(baseBound, &info, i, &solveInfo);
+        if (solveInfo.isCancelled) break;
     }
     
     if (info.destroy) {
@@ -103,6 +106,7 @@ static void sa_dispatch_threads(const char * boundStep, SAUserInfo * info,
         state->maxDepth = maxDepth;
         state->userInfo = info;
         state->solveInfo = solve;
+        state->nodesExpanded = 0;
         memcpy(state->lowerBound, startBound, kDistributionBoundDepth);
         memcpy(state->upperBound, endBound, kDistributionBoundDepth);
         pthread_create(&threads[i], NULL, &sa_solve_thread_main, state);
@@ -147,6 +151,10 @@ static void * sa_solve_thread_main(void * _threadInfo) {
     
     sa_solve_recursive_method(threadInfo, 0, userInfo->startObject);
     
+    pthread_mutex_lock(&threadInfo->solveInfo->lock);
+    threadInfo->solveInfo->nodesExpanded += threadInfo->nodesExpanded;
+    pthread_mutex_unlock(&threadInfo->solveInfo->lock);
+    
     // free everything
     for (i = 0; i < threadInfo->maxDepth; i++) {
         userInfo->free_group_object(userData, threadInfo->mapCache[i]);
@@ -160,6 +168,23 @@ static int sa_solve_recursive_method(SAThreadInfo * info, int currentDepth, void
     SAUserInfo * userInfo = info->userInfo;
     void * userData = userInfo->userData;
     
+    info->nodesExpanded++;
+    if (info->nodesExpanded >= userInfo->progressIncrement) {
+        pthread_mutex_lock(&info->solveInfo->lock);
+        if (info->solveInfo->isCancelled) {
+            pthread_mutex_unlock(&info->solveInfo->lock);
+            return 0;
+        }
+        info->solveInfo->nodesExpanded += info->nodesExpanded;
+        info->nodesExpanded = 0;
+        time_t duration = time(NULL) - info->solveInfo->startTime;
+        if (userInfo->verbosity > 0) {
+            userInfo->report_progress(userData, duration, info->solveInfo->nodesExpanded,
+                                      info->maxDepth);
+        }
+        pthread_mutex_unlock(&info->solveInfo->lock);
+    }
+    
     // check for a goal state
     if (currentDepth == info->maxDepth) {
         /*printf("tried sequence: ");
@@ -169,7 +194,9 @@ static int sa_solve_recursive_method(SAThreadInfo * info, int currentDepth, void
         }
         printf("\n");*/
         if (userInfo->is_goal(userData, object)) {
+            pthread_mutex_lock(&info->solveInfo->lock);
             userInfo->report_solution(userData, info->lastMoves, currentDepth);
+            pthread_mutex_unlock(&info->solveInfo->lock);
             if (!userInfo->multipleSolutions) {
                 sa_cancel_solve(info);
                 return 0;
@@ -186,6 +213,7 @@ static int sa_solve_recursive_method(SAThreadInfo * info, int currentDepth, void
     int i, j;
     void * applicationDestination = info->mapCache[currentDepth];
     
+    // calculate boundaries
     int lowerBound = 0;
     int upperBound = userInfo->operationCount - 1;
     if (currentDepth == 0) {

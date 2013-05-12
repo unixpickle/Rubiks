@@ -1,4 +1,5 @@
 #include "rubikspl_cmd.h"
+#include "cmdutil.h"
 
 static void printUsage();
 static void generate_user_info(SAUserInfo * info);
@@ -29,29 +30,20 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
                 }
                 heuristic_list_add(pluginInfo.heuristics, table);
             }
+            continue;
         } else if (strcmp(argv[i], "--multiple") == 0) {
             solveUserInfo.multipleSolutions = 1;
+            continue;
         }
         // numerical arguments 
-        if (strlen(argv[i]) > strlen("--threads=")) {
-            if (strncmp(argv[i], "--threads=", strlen("--threads=")) == 0) {
-                solveUserInfo.threadCount = atoi(&argv[i][strlen("--threads=")]);
-                if (solveUserInfo.threadCount <= 0) solveUserInfo.threadCount = 1;
-            }
-        }
-        if (strlen(argv[i]) > strlen("--mindepth=")) {
-            if (strncmp(argv[i], "--mindepth=", strlen("--mindepth=")) == 0) {
-                solveUserInfo.minDepth = atoi(&argv[i][strlen("--mindepth=")]);
-                if (solveUserInfo.minDepth < 0) solveUserInfo.minDepth = 0;
-            } else if (strncmp(argv[i], "--maxdepth=", strlen("--maxdepth=")) == 0) {
-                solveUserInfo.maxDepth = atoi(&argv[i][strlen("--maxdepth=")]);
-                if (solveUserInfo.maxDepth < 0) solveUserInfo.maxDepth = 0;
-            }
+        if (parse_solve_agent_argument(&solveUserInfo, argv[i])) {
+            continue;
         }
         // moveset arguments
         if (strcmp(argv[i], "--double") == 0) {
             rubikspl_context_free(pluginInfo);
             rubikspl_context_new_double(&pluginInfo);
+            continue;
         }
         if (strlen(argv[i]) >= strlen("--maxfaces=")) {
             if (strncmp(argv[i], "--maxfaces=", strlen("--maxfaces=")) == 0) {
@@ -60,14 +52,18 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
                     rubikspl_context_new_default(&pluginInfo);
                 }
                 pluginInfo.maxIndepFaces = atoi(&argv[i][strlen("--maxfaces=")]);
+                continue;
             }
         }
         if (strlen(argv[i]) >= strlen("--operations=")) {
             if (strncmp(argv[i], "--operations=", strlen("--operations=")) == 0) {
                 rubikspl_context_free(pluginInfo);
                 rubikspl_context_new_custom(&pluginInfo, &argv[i][strlen("--operations=")]);
+                continue;
             }
         }
+        fprintf(stderr, "error: unknown option `%s`\n", argv[i]);
+        goto freeAndReturn;
     }
     
     solveUserInfo.operationCount = pluginInfo.operationCount;
@@ -97,7 +93,7 @@ static void generate_user_info(SAUserInfo * info) {
     bzero(info, sizeof(SAUserInfo));
     info->operationCount = 18;
     info->multipleSolutions = 0;
-    info->verbosity = 2;
+    info->verbosity = 1;
     info->progressIncrement = 1 << 21;
     info->threadCount = 6;
     info->create_group_identity = rubikspl_create_group_identity;
@@ -107,6 +103,7 @@ static void generate_user_info(SAUserInfo * info) {
     info->accepts_sequence = rubikspl_accepts_sequence;
     info->heuristic_exceeds = rubikspl_heuristic_exceeds;
     info->report_solution = rubikspl_report_solution;
+    info->report_progress = rubikspl_report_progress;
     info->minDepth = 0;
     info->maxDepth = 20;
 }

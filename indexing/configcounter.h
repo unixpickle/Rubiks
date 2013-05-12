@@ -5,7 +5,7 @@
  */
 
 #include "shard.h"
-#include "cube.h"
+#include "representation/cube.h"
 #include "index.h"
 
 typedef struct {

@@ -6,5 +6,6 @@
 
 RubiksMap ** cube_standard_face_turns();
 void cube_print_standard_solution(const unsigned char * moves, int length);
+RubiksMap * cube_for_algorithm(const char * algorithm);
 
 #endif

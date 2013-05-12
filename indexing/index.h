@@ -1,4 +1,4 @@
-#include "rubiksmap.h"
+#include "representation/rubiksmap.h"
 #include "shard.h"
 
 typedef enum {

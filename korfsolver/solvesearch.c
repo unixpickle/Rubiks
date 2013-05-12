@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "heuristic.h"
-#include "cube.h"
+#include "representation/cube.h"
 
 typedef struct {
     int operationStart;

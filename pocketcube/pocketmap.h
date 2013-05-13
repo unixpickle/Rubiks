@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "operations.h"
-#include "stickerindices.h"
-#include "symmetry.h"
+#include "representation/operations.h"
+#include "representation/stickerindices.h"
+#include "representation/symmetry.h"
 
 typedef struct {
     char pieces[8];

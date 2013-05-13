@@ -3,9 +3,8 @@
 static const char * SubproblemNames[] = {"unknown", "edgefront", "edgeback", "edgeall",
                                          "corners", "eo",
                                          "block0", "block1", "block2", "block3", "block4",
-                                         "block5", "block6", "block7", "block8",
-                                         "cross1", "cross2", "cross3", "cross4",
-                                         "cross5", "cross6"};
+                                         "block5", "block6", "block7", "cross1", "cross2",
+                                         "cross3", "cross4", "cross5", "cross6"};
 
 static void _index_recursive_write(FILE * output, ShardNode * node,
                                    unsigned char * data, int depth,

@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #include "pocketmap.h"
-#include "index.h"
-#include "cube.h"
+#include "representation/cube.h"
+#include "indexing/index.h"
 
 static ShardNode * cornersNode = NULL;
 static unsigned char maxMoves = 0;

@@ -75,7 +75,7 @@ static void configure_user_info(SAUserInfo * info) {
     info->report_solution = blockpl_report_solution;
     info->report_progress = blockpl_report_progress;
     info->operationCount = 18;
-    info->maxDepth = 7;
+    info->maxDepth = 8;
     info->minDepth = 0;
     info->multipleSolutions = 0;
     info->verbosity = 1;

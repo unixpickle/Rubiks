@@ -1,24 +1,27 @@
-solver: rubikspl_cmd.o orientpl_cmd.o
-	gcc -O2 -lpthread solver.c rubikspl_cmd.o orientpl_cmd.o cmdutil.o heuristic.o solveagent.o ../representation/cube.o ../indexing/index.o -I../ -o solver
+solver: rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o heuristic.o pltools.o
+	gcc -O2 -lpthread solver.c rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o pltools.o cmdutil.o heuristic.o solveagent.o ../representation/cube.o ../indexing/index.o -I../ -o solver
+	rm *.o
 
-orientpl_cmd.o: orientpl.o solveagent.o cmdutil.o
-	gcc -O2 -c orientpl_cmd.c -o _orientpl_cmd.o -I../
-	ld -r _orientpl_cmd.o orientpl.o -o orientpl_cmd.o
-	rm _orientpl_cmd.o
+pltools.o:
+	gcc -O2 -c pltools.c
 
-rubikspl_cmd.o: rubikspl.o solveagent.o cmdutil.o
-	gcc -O2 -c rubikspl_cmd.c -o _rubikspl_cmd.o -I../
-	ld -r _rubikspl_cmd.o rubikspl.o -o rubikspl_cmd.o
-	rm _rubikspl_cmd.o
+blockpl_cmd.o: solveagent.o cmdutil.o
+	cd blockpl && make
+	mv blockpl/blockpl_cmd.o .
+	rm blockpl/*.o
+
+orientpl_cmd.o: solveagent.o cmdutil.o
+	cd orientpl && make
+	mv orientpl/orientpl_cmd.o .
+	rm orientpl/*.o
+
+rubikspl_cmd.o: solveagent.o cmdutil.o
+	cd rubikspl && make
+	mv rubikspl/rubikspl_cmd.o .
+	rm rubikspl/*.o
 
 cmdutil.o:
-	gcc -O2 -c cmdutil.c
-
-orientpl.o: heuristic.o
-	gcc -O2 -c orientpl.c -I../
-
-rubikspl.o: heuristic.o
-	gcc -O2 -c rubikspl.c -I../
+	gcc -O2 -c cmdutil.c -I../
 
 solveagent.o: solveagent.c
 	gcc -O2 -c solveagent.c

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "representation/cube.h"
-#include "heuristic.h"
+#include "solver/heuristic.h"
 
 typedef enum {
     RubiksPlMovesetDefault,

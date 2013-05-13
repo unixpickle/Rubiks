@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "representation/cube.h"
-#include "heuristic.h"
+#include "solver/heuristic.h"
+#include "solver/pltools.h"
 
 typedef struct {
     HeuristicTable * edgeHeuristic;

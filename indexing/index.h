@@ -17,6 +17,12 @@ typedef enum {
     IndexTypeBlock5 = 11,
     IndexTypeBlock6 = 12,
     IndexTypeBlock7 = 13,
+    IndexTypeCross1 = 14,
+    IndexTypeCross2 = 15,
+    IndexTypeCross3 = 16,
+    IndexTypeCross4 = 17,
+    IndexTypeCross5 = 18,
+    IndexTypeCross6 = 19,
 } IndexType;
 
 IndexType index_type_from_string(const char * str);

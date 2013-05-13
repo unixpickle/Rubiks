@@ -13,7 +13,6 @@ void orientpl_cmd_main(int argc, const char * argv[]) {
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--help") == 0) {
             printUsage();
-            orientpl_free(pluginInfo);
             goto freeAndReturn;
         } else if (strcmp(argv[i], "--multiple") == 0) {
             userInfo.multipleSolutions = 1;
@@ -23,20 +22,9 @@ void orientpl_cmd_main(int argc, const char * argv[]) {
                 continue;
             }
         }
-        if (strlen(argv[i]) > strlen("--heuristic=")) {
-            if (strncmp(argv[i], "--heuristic=", strlen("--heuristic=")) == 0) {
-                const char * path = &argv[i][strlen("--heuristic=")];
-                if (pluginInfo.edgeHeuristic) {
-                    heuristic_table_free(pluginInfo.edgeHeuristic);
-                }
-                pluginInfo.edgeHeuristic = heuristic_table_load(path);
-                if (!pluginInfo.edgeHeuristic) {
-                    fprintf(stderr, "Failed to read heuristic file: %s\n", path);
-                    goto freeAndReturn;
-                }
-                continue;
-            }
-        }
+        int result = parse_heuristic_argument(&pluginInfo.edgeHeuristic, argv[i]);
+        if (result == 1) continue;
+        if (result < 0) goto freeAndReturn;
         fprintf(stderr, "error: unknown option `%s`\n", argv[i]);
         goto freeAndReturn;
     }

@@ -59,10 +59,8 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                                    entryDataLength, 2);
     // if the information exists, check if we are done with this node
     if (entry) {
-        if (userInfo->indexType == IndexTypeCorners ||
-            userInfo->indexType == IndexTypeEdgeAll || 
-            userInfo->indexType == IndexTypeEO || 
-            (userInfo->indexType >= 6 && userInfo->indexType <= 13)) {
+        if (userInfo->indexType != IndexTypeEdgeBack &&
+            userInfo->indexType != IndexTypeEdgeFront) {
             if (entry[entryDataLength - 2] < depth) return;
             if (memcmp(&entry[entryDataLength - 2], &mapData[indexCount], 2) == 0) return;
         } else {

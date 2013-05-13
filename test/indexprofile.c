@@ -1,4 +1,4 @@
-#include "index.h"
+#include "indexing/index.h"
 #include <stdio.h>
 
 void performProfile(ShardNode * node, int dataSize);
@@ -16,26 +16,7 @@ int main(int argc, const char * argv[]) {
         fprintf(stderr, "error: failed to load file.\n");
         return 1;
     }
-    const char * indexTypeName = "unknown";
-    switch (type) {
-        case IndexTypeCorners:
-            indexTypeName = "corners";
-            break;
-        case IndexTypeEdgeFront:
-            indexTypeName = "edgefront";
-            break;
-        case IndexTypeEdgeBack:
-            indexTypeName = "edgeback";
-            break;
-        case IndexTypeEdgeAll:
-            indexTypeName = "edgeall";
-            break;
-        case IndexTypeEO:
-            indexTypeName == "eo";
-            break;
-        default:
-            break;
-    }
+    const char * indexTypeName = index_type_to_string(type);
     printf("Max Moves: %d\nIndexType: %s (%d)\n", maxMoves, indexTypeName, type);
     printf("Performing profile...\n");
     performProfile(index, index_type_data_size(type) + 1);

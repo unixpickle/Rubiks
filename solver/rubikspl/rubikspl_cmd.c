@@ -1,5 +1,4 @@
 #include "rubikspl_cmd.h"
-#include "cmdutil.h"
 
 static void printUsage();
 static void generate_user_info(SAUserInfo * info);

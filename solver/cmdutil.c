@@ -21,3 +21,21 @@ int parse_solve_agent_argument(SAUserInfo * info, const char * argument) {
     }
     return 0;
 }
+
+int parse_heuristic_argument(HeuristicTable ** out, const char * argument) {
+    if (strlen(argument) > strlen("--heuristic=")) {
+        if (strncmp(argument, "--heuristic=", strlen("--heuristic=")) == 0) {
+            const char * path = &argument[strlen("--heuristic=")];
+            if (*out) {
+                heuristic_table_free(*out);
+            }
+            *out = heuristic_table_load(path);
+            if (!*out) {
+                fprintf(stderr, "Failed to read heuristic file: %s\n", path);
+                return -1;
+            }
+            return 1;
+        }
+    }
+    return 0;
+}

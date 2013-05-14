@@ -1,5 +1,5 @@
 solver: rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o crosspl_cmd.o heuristic.o pltools.o
-	gcc -O2 -lpthread solver.c rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o crosspl_cmd.o pltools.o cmdutil.o heuristic.o solveagent.o ../representation/cube.o ../indexing/index.o -I../ -o solver
+	gcc -O2 -lpthread solver.c rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o crosspl_cmd.o pltools.o cmdutil.o heuristic.o solveagent.o ../representation/cube.o ../indexing/index.o -I../ -o solver -lpthread
 	rm *.o
 
 pltools.o:

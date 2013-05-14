@@ -1,3 +1,6 @@
+#ifndef __STICKER_INDICES_H__
+#define __STICKER_INDICES_H__
+
 static const unsigned char CornerPieces[8][3] = {
     {6,4,2}, // 000
     {6,4,1}, // 001
@@ -46,3 +49,5 @@ static const char EdgeIndices[12][3] = {
     {42, 10, -1},
     {47, 34, -1}
 };
+
+#endif

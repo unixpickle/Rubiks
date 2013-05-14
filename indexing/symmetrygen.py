@@ -42,7 +42,7 @@ def rotateCorners(corners, count=1, axis='x'):
     return rotateCorners(newCorners, count - 1, axis)
 
 def printEdgeCornerSymmetry(edge, corner):
-    desc = '{{'
+    desc = '  {{'
     for i in range(0, 12):
         desc += str(edge[i])
         if i != 11: desc += ', '
@@ -81,11 +81,14 @@ def main():
             symCorners = rotateCorners(cornerList[i], j, 'z')
             printEdgeCornerSymmetry(symEdges, symCorners)
     
-    print "4 rotational y-axis symmetries"
+    print "8 rotational y-axis symmetries"
     for i in range(0, 4):
         symEdges = rotateEdges(edges, i, 'y')
         symCorners = rotateCorners(corners, i, 'y')
-        printEdgeCornerSymmetry(symEdges, symCorners)
+        for j in range (0, 2):
+            symEdges = rotateEdges(symEdges, j*2, 'z')
+            symCorners = rotateCorners(symCorners, j*2, 'z')
+            printEdgeCornerSymmetry(symEdges, symCorners)
 
 main()
     

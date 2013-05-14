@@ -184,36 +184,16 @@ static void _index_copy_cross_data(RubiksMap * map, IndexType it, unsigned char 
 
 static void _index_copy_r2f2u_data(RubiksMap * map, IndexType it, unsigned char * data) {
     uint16_t edgesInfo = rubiks_map_edge_orientations(map);
-    uint16_t cornersInfo = 0; // 2 bits per each corner orientation
-                              // 0 = bottom/top color facing x direction, 1 = y dir, 2 = z dir
-    uint16_t edgeTypes = 0;
-    int i;
-    for (i = 0; i < 8; i++) {
-        unsigned char piece = map->pieces[i];
-        const unsigned char * pieceIndices = CornerIndices[i];
-        unsigned char colors[3];
-        memcpy(colors, CornerPieces[piece & 7], 3);
-        symmetry_operation_perform((piece >> 4) & 7, colors);
-        uint16_t orientation = 0;
-        if (colors[1] == 3 || colors[1] == 4) orientation = 1;
-        else if (colors[2] == 3 || colors[2] == 4) orientation = 2;
-        cornersInfo |= orientation << (i * 2);
-    }
-    
-    for (i = 0; i < 12; i++) {
-        int pieceNumber = map->pieces[i + 8] & 0xf;
-        if (pieceNumber < 4 || (pieceNumber >= 6 && pieceNumber <= 9)) {
-            edgeTypes |= 1 << i;
-        }
-    }
-    
+    uint16_t cornersInfo = rubiks_map_corner_orientations(map);
+    uint16_t edgeTypes = rubiks_map_topbottom_edge_map(map);
+
     uint16_t origData[3];
     origData[0] = edgesInfo;
     origData[1] = cornersInfo;
     origData[2] = edgeTypes;
     uint16_t symmetrized[3];
     memcpy(symmetrized, origData, 6);
-    map_symmetry_compute_lowest(MapRotationalYSymmetries, 4, origData, symmetrized);
+    map_symmetry_compute_lowest(MapRotationalYSymmetries, 8, origData, symmetrized);
     
     // printf("final: %d, %d, %d\n", symmetrized[0], symmetrized[1], symmetrized[2]);
     

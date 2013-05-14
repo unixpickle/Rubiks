@@ -3,6 +3,7 @@
 #include "orientpl/orientpl_cmd.h"
 #include "blockpl/blockpl_cmd.h"
 #include "crosspl/crosspl_cmd.h"
+#include "r2f2upl/r2f2upl_cmd.h"
 
 void printUsage(const char * execName);
 
@@ -19,6 +20,8 @@ int main(int argc, const char * argv[]) {
         blockpl_cmd_main(argc - 1, &argv[1]);
     } else if (strcmp(argv[1], "cross") == 0) {
         crosspl_cmd_main(argc - 1, &argv[1]);
+    } else if (strcmp(argv[1], "r2f2u") == 0) {
+        r2f2upl_cmd_main(argc - 1, &argv[1]);
     } else {
         fprintf(stderr, "error: unknown solver `%s`\n", argv[1]);
         return 1;

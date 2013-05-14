@@ -1,9 +1,14 @@
-solver: rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o crosspl_cmd.o heuristic.o pltools.o
-	gcc -O2 -lpthread solver.c rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o crosspl_cmd.o pltools.o cmdutil.o heuristic.o solveagent.o ../representation/cube.o ../indexing/index.o -I../ -o solver -lpthread
+solver: rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o crosspl_cmd.o r2f2upl_cmd.o heuristic.o pltools.o
+	gcc -O2 -lpthread solver.c rubikspl_cmd.o orientpl_cmd.o blockpl_cmd.o crosspl_cmd.o r2f2upl_cmd.o pltools.o cmdutil.o heuristic.o solveagent.o ../representation/cube.o ../indexing/index.o -I../ -o solver -lpthread
 	rm *.o
 
 pltools.o:
 	gcc -O2 -c pltools.c
+
+r2f2upl_cmd.o: solveagent.o cmdutil.o
+	cd r2f2upl && make
+	mv r2f2upl/r2f2upl_cmd.o .
+	rm r2f2upl/*.o
 
 crosspl_cmd.o: solveagent.o cmdutil.o
 	cd crosspl && make

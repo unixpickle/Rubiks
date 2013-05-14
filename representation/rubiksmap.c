@@ -173,6 +173,36 @@ uint16_t rubiks_map_edge_orientations(RubiksMap * map) {
     return bitArray;
 }
 
+uint16_t rubiks_map_corner_orientations(RubiksMap * map) {
+    uint16_t cornersInfo = 0;
+    int i;
+    for (i = 0; i < 8; i++) {
+        unsigned char piece = map->pieces[i];
+        const unsigned char * pieceIndices = CornerIndices[i];
+        unsigned char colors[3];
+        memcpy(colors, CornerPieces[piece & 7], 3);
+        symmetry_operation_perform((piece >> 4) & 7, colors);
+        uint16_t orientation = 0;
+        if (colors[1] == 3 || colors[1] == 4) orientation = 1;
+        else if (colors[2] == 3 || colors[2] == 4) orientation = 2;
+        cornersInfo |= orientation << (i * 2);
+    }
+    return cornersInfo;
+}
+
+uint16_t rubiks_map_topbottom_edge_map(RubiksMap * map) {
+    uint16_t edgeTypes = 0;
+    int i;
+    for (i = 0; i < 12; i++) {
+        int pieceNumber = map->pieces[i + 8] & 0xf;
+        if (pieceNumber != 1 && pieceNumber != 3 &&
+            pieceNumber != 9 && pieceNumber != 7) {
+            edgeTypes |= 1 << i;
+        }
+    }
+    return edgeTypes;
+}
+
 void rubiks_map_free(RubiksMap * map) {
     free(map);
 }

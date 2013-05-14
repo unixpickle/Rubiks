@@ -20,6 +20,8 @@ void rubiks_map_multiply(RubiksMap * out, RubiksMap * left, RubiksMap * right);
 void rubiks_map_operate(RubiksMap * out, RubiksMap * map, RubiksOperation o);
 int rubiks_map_is_identity(RubiksMap * map);
 uint16_t rubiks_map_edge_orientations(RubiksMap * map);
+uint16_t rubiks_map_corner_orientations(RubiksMap * map);
+uint16_t rubiks_map_topbottom_edge_map(RubiksMap * map);
 void rubiks_map_free(RubiksMap * map);
 
 RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers);

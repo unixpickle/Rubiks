@@ -1,7 +1,7 @@
 #include "indexing/index.h"
 #include <stdio.h>
 
-void performProfile(ShardNode * node, int dataSize);
+void performProfile(ShardNode * node, long long dataSize);
 
 int main(int argc, const char * argv[]) {
     if (argc != 2) {
@@ -24,10 +24,11 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-void performProfile(ShardNode * node, int dataSize) {
+void performProfile(ShardNode * node, long long dataSize) {
+    printf("Enumerating %u nodes\n", node->nodeDataSize);
     int instanceCount[256];
     bzero(instanceCount, sizeof(instanceCount));
-    int i;
+    long long i;
     for (i = 0; i < node->nodeDataSize; i++) {
         unsigned char * data = &node->nodeData[i * dataSize];
         instanceCount[data[dataSize - 1]] ++;
@@ -35,7 +36,7 @@ void performProfile(ShardNode * node, int dataSize) {
     int total = 0;
     for (i = 0; i < 256; i++) {
         if (instanceCount[i] > 0) {
-            printf("%d - %d\n", i, instanceCount[i]);
+            printf("%lld - %d\n", i, instanceCount[i]);
             total += instanceCount[i];
         }
     }

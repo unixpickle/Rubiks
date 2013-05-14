@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdint.h>
 
 typedef struct {
     void ** subnodes;
-    unsigned char subnodeCount;
-    unsigned char subnodeAlloc;
+    uint16_t subnodeCount;
+    uint16_t subnodeAlloc;
     unsigned char nodeCharacter;
     // node data for base nodes
     unsigned char depthRemaining; // 0 means this is a base node

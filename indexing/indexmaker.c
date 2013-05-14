@@ -13,7 +13,8 @@ int main(int argc, const char * argv[]) {
 - 'edgeall' - all of the twelve edges\n\
 - 'eo' - all of the edges' orientations\n\
 - 'block#' - 2x2x2 blocks numbered 0-7 (e.g. block3)\n\
-- 'cross#' - the CFOP cross numbered 1-6 (e.g cross4)\n", argv[0]);
+- 'cross#' - the CFOP cross numbered 1-6 (e.g cross4)\n\
+- 'R2F2U' - the subgroup <L2,R2,F2,B2,U,D>\n", argv[0]);
         return 1;
     }
     outputFile = argv[1];

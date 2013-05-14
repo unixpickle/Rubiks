@@ -1,4 +1,6 @@
 #include "representation/rubiksmap.h"
+#include "representation/stickerindices.h"
+#include "mapsymmetry.h"
 #include "shard.h"
 #include "subproblemindices.h"
 
@@ -23,6 +25,7 @@ typedef enum {
     IndexTypeCross4 = 17,
     IndexTypeCross5 = 18,
     IndexTypeCross6 = 19,
+    IndexTypeR2F2UGroup = 20
 } IndexType;
 
 IndexType index_type_from_string(const char * str);

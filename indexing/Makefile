@@ -11,11 +11,13 @@ configcounter.o: configcounter.c index.o
 shard.o: shard.c
 	gcc -c shard.c -I../
 
-index.o: index.c shard.o
+index.o: index.c shard.o mapsymmetry.o
 	gcc -c index.c -I../ -o _index.o
-	ld -r _index.o shard.o -o index.o
+	ld -r _index.o shard.o mapsymmetry.o -o index.o
 	rm _index.o
-	
+
+mapsymmetry.o:
+	gcc -O2 -c mapsymmetry.c
 
 clean:
 	rm *.o

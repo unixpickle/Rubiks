@@ -4,10 +4,6 @@ static void printUsage();
 static void configure_user_info(SAUserInfo * info);
 
 void r2f2upl_cmd_main(int argc, const char * argv[]) {
-    if (argc < 2) {
-        printUsage();
-        return;
-    }
     int i;
     SAUserInfo userInfo;
     configure_user_info(&userInfo);

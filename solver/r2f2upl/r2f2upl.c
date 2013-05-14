@@ -28,9 +28,10 @@ void r2f2upl_operate(void * data, void * destination, void * object, int operati
 int r2f2upl_is_goal(void * data, void * object) {
     R2F2UPl * pl = (R2F2UPl *)data;
     RubiksMap * map = (RubiksMap *)object;
-    if (rubiks_map_corner_orientations(map) != 0) return 0;
+    if (rubiks_map_corner_orientations(map) != 0x5555) return 0;
     uint16_t edgeInfo = rubiks_map_topbottom_edge_map(map);
-    if (edgeInfo != 0x3cf) return 0;
+    if (edgeInfo != 0xd75) return 0;
+    if (rubiks_map_edge_orientations(map) != 0xfff) return 0;
     return 1;
 }
 

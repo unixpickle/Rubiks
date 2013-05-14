@@ -36,6 +36,10 @@ int main(int argc, const char * argv[]) {
     printf("Saving nodes...\n");
     
     FILE * fp = fopen(outputFile, "w");
+    if (!fp) {
+        perror("fopen");
+        exit(1);
+    }
     index_file_write(info.indexType,
                      index_type_data_size(info.indexType) + 1,
                      index_type_data_size(info.indexType) + 2,

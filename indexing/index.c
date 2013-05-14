@@ -126,7 +126,7 @@ static void _index_recursive_write(FILE * output, ShardNode * node,
     if (depth > 0) {
         data[depth - 1] = node->nodeCharacter;
     }
-    int i;
+    unsigned int i;
     if (node->depthRemaining == 0) {
         // just write the data, straightup
         for (i = 0; i < node->nodeDataSize; i++) {

@@ -35,5 +35,6 @@ void printUsage(const char * execName) {
     fprintf(stderr, " rubiks - standard 3x3x3 solver [GN=20]\n\
  orient - orients all the edges on a 3x3x3 [GN=7]\n\
  block - solves a 2x2x2 block on a 3x3x3 [GN=8]\n\
- cross - solves a CFOP cross [GN=8]\n\n");
+ cross - solves a CFOP cross [GN=8]\n\
+ r2f2u - moves the cube into <L2,R2,F2,B2,U,D>\n\n");
 }

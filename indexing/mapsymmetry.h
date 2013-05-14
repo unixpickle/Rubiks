@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <unistd.h>
+#include <string.h>
 
 typedef struct {
     unsigned char edges[12];

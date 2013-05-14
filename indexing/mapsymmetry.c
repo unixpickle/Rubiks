@@ -31,7 +31,7 @@ void map_symmetry_compute_lowest(const MapSymmetry * syms, int numSym,
     memcpy((void *)lowest, (void *)ptrsIn, sizeof(uint16_t) * 3);
     for (i = 0; i < numSym; i++) {
         uint16_t ptrs[3];
-        MapSymmetry * sym = &syms[i];
+        const MapSymmetry * sym = &syms[i];
         ptrs[0] = map_symmetry_apply_edges(sym, ptrsIn[0]);
         ptrs[1] = map_symmetry_apply_corners(sym, ptrsIn[1]);
         ptrs[2] = map_symmetry_apply_edges(sym, ptrsIn[2]);

@@ -6,6 +6,7 @@ static void generate_user_info(SAUserInfo * info);
 void rubikspl_cmd_main(int argc, const char * argv[]) {
     SAUserInfo solveUserInfo;
     RubiksPl pluginInfo;
+    RubiksMap * premoves = NULL;
     pluginInfo.heuristics = heuristic_list_new();
     rubikspl_context_new_default(&pluginInfo);
     generate_user_info(&solveUserInfo);
@@ -32,6 +33,11 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
             continue;
         } else if (strcmp(argv[i], "--multiple") == 0) {
             solveUserInfo.multipleSolutions = 1;
+            continue;
+        }
+        RubiksMap * possibleMap = NULL;
+        if (possibleMap = parse_premoves_argument(argv[i])) {
+            premoves = possibleMap;
             continue;
         }
         // numerical arguments 
@@ -67,7 +73,7 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
     
     solveUserInfo.operationCount = pluginInfo.operationCount;
     
-    RubiksMap * scramble = rubiks_map_user_input();
+    RubiksMap * scramble = rubiks_map_user_input_premoves(premoves);
     if (!scramble) {
         fprintf(stderr, "error: failed to read scramble!\n");
         goto freeAndReturn;
@@ -85,7 +91,8 @@ freeAndReturn:
 
 static void printUsage() {
     fprintf(stderr, "Usage: rubiks [--help] [--heuristic <file>] [--multiple] [--threads=n]\n\
-        [--mindepth=n] [--maxdepth=n] [--double | --maxfaces=n | --operations=alg1,alg2,...]\n");
+        [--premoves=ALG] [--mindepth=n] [--maxdepth=n]\n\
+        [--double | --maxfaces=n | --operations=alg1,alg2,...]\n");
 }
 
 static void generate_user_info(SAUserInfo * info) {

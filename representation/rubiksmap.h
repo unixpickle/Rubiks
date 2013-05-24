@@ -13,6 +13,7 @@ typedef struct {
 } RubiksMap;
 
 RubiksMap * rubiks_map_user_input();
+RubiksMap * rubiks_map_user_input_premoves(RubiksMap * premoves);
 RubiksMap * rubiks_map_new_identity();
 RubiksMap * rubiks_map_inverse(RubiksMap * map);
 void rubiks_map_copy_into(RubiksMap * out, const RubiksMap * input);

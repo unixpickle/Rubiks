@@ -39,3 +39,13 @@ int parse_heuristic_argument(HeuristicTable ** out, const char * argument) {
     }
     return 0;
 }
+
+RubiksMap * parse_premoves_argument(const char * argument) {
+    if (strlen(argument) > strlen("--premoves=")) {
+        if (strncmp(argument, "--premoves=", strlen("--premoves=")) == 0) {
+            const char * premoves = &argument[strlen("--premoves=")];
+            return cube_for_algorithm(premoves);
+        }
+    }
+    return NULL;
+}

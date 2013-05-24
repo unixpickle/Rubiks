@@ -58,6 +58,18 @@ RubiksMap * rubiks_map_user_input() {
     return map;
 }
 
+RubiksMap * rubiks_map_user_input_premoves(RubiksMap * premoves) {
+    StickerMap * stickers = sticker_map_user_input();
+    if (!stickers) return NULL;
+    RubiksMap * map = rubiks_map_from_sticker_map(stickers);
+    sticker_map_free(stickers);
+    if (!premoves) return map;
+    RubiksMap * newMap = rubiks_map_new_identity();
+    rubiks_map_multiply(newMap, premoves, map);
+    rubiks_map_free(map);
+    return newMap;
+}
+
 RubiksMap * rubiks_map_new_identity() {
     RubiksMap * map = (RubiksMap *)malloc(sizeof(RubiksMap));
     memcpy(map->pieces, _IdentityMapData, 20);

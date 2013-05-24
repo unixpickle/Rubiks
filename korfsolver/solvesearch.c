@@ -79,6 +79,7 @@ int main(int argc, const char * argv[]) {
         return 0;
     }
     RubiksMap * userMap = rubiks_map_user_input();
+    
     if (!userMap) {
         fprintf(stderr, "Invalid user input\n");
         return 0;

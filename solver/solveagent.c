@@ -231,15 +231,17 @@ static int sa_solve_recursive_method(SAThreadInfo * info, int currentDepth, void
             lowerBound = info->lowerBound[currentDepth];
         }
         if (info->lastMoves[currentDepth - 1] == info->upperBound[currentDepth - 1]) {
-            upperBound = info->upperBound[currentDepth];
             int isLastUpper = 1;
             for (j = currentDepth + 1; j < kDistributionBoundDepth && j < info->maxDepth; j++) {
                 if (info->upperBound[j] > 0) {
                     isLastUpper = 0;
                 }
             }
-            if (isLastUpper) {
-                upperBound -= 1;
+            if (!isLastUpper || info->upperBound[currentDepth] != 0) {
+                upperBound = info->upperBound[currentDepth];
+                if (isLastUpper) {
+                    upperBound -= 1;
+                }
             }
         }
     }

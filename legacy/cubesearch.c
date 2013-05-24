@@ -74,8 +74,8 @@ static void * _solution_search_method(void * _argument) {
     SyncStructure * sync = argument->sync;
     free(argument);
 
-    int * indices = (int *)malloc(sizeof(int) * length);
-    bzero(indices, sizeof(int) * length);
+    unsigned char * indices = (unsigned char *)malloc(sizeof(unsigned char) * length);
+    bzero(indices, length);
     indices[length - 1] = segmentIndex;
     int i, done = 0;
     RubiksMap * result = rubiks_map_new_identity();

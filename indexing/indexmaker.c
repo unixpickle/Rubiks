@@ -3,9 +3,9 @@
 
 int main(int argc, const char * argv[]) {
     const char * outputFile = NULL;
-    int depth = 0;
-    if (argc != 4) {
-        fprintf(stderr, "Usage: %s <output> <depth> <subproblem>\n\
+    int depth = 0, i;
+    if (argc < 4) {
+        fprintf(stderr, "Usage: %s <output> <depth> <subproblem> [--operations=ALG1,ALG2,...]\n\
 \n\nList of subproblems:\n\
 - 'corners' - the corner subproblem\n\
 - 'edgefront' - the front and top edge pieces\n\
@@ -31,6 +31,16 @@ int main(int argc, const char * argv[]) {
     RubiksMap * map = rubiks_map_new_identity();
     info.maximumDepth = depth;
     info.identity = map;
+    pl_moveset_initialize(&info.moveset);
+    
+    for (i = 4; i < argc; i++) {
+        if (parse_moveset_argument(&info.moveset, argv[i])) {
+            continue;
+        }
+        fprintf(stderr, "error: unknown argument `%s`\n", argv[i]);
+        exit(1);
+    }
+    
     ShardNode * node = cc_compute_table(info);
     rubiks_map_free(map);
     printf("Saving nodes...\n");
@@ -47,5 +57,6 @@ int main(int argc, const char * argv[]) {
     fclose(fp);
     
     shard_node_free(node);
+    pl_moveset_free(&info.moveset);
     return 0;
 }

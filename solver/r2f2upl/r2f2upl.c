@@ -1,15 +1,14 @@
 #include "r2f2upl.h"
 
 void r2f2upl_initialize(R2F2UPl * pl) {
-    pl->operations = cube_standard_face_turns();
+    pl_moveset_initialize(&pl->moveset);
 }
 
 void r2f2upl_free(R2F2UPl pl) {
-    int i;
-    for (i = 0; i < 18; i++) {
-        rubiks_map_free(pl.operations[i]);
+    pl_moveset_free(&pl.moveset);
+    if (pl.heuristic) {
+        heuristic_table_free(pl.heuristic);
     }
-    free(pl.operations);
 }
 
 void * r2f2upl_create_group_identity(void * data) {
@@ -22,7 +21,7 @@ void r2f2upl_free_group_object(void * data, void * object) {
 
 void r2f2upl_operate(void * data, void * destination, void * object, int operation) {
     R2F2UPl * pl = (R2F2UPl *)data;
-    rubiks_map_multiply(destination, pl->operations[operation], object);
+    rubiks_map_multiply(destination, pl->moveset.operations[operation], object);
 }
 
 int r2f2upl_is_goal(void * data, void * object) {
@@ -36,7 +35,8 @@ int r2f2upl_is_goal(void * data, void * object) {
 }
 
 int r2f2upl_accepts_sequence(void * data, unsigned char * moves, int count) {
-    return standard_operations_validate(moves, count);
+    R2F2UPl * pl = (R2F2UPl *)data;
+    return pl_moveset_accepts_sequence(&pl->moveset, moves, count);
 }
 
 int r2f2upl_heuristic_exceeds(void * data, void * object, int maxMoves) {
@@ -49,8 +49,9 @@ int r2f2upl_heuristic_exceeds(void * data, void * object, int maxMoves) {
 }
 
 void r2f2upl_report_solution(void * data, unsigned char * moves, int count) {
+    R2F2UPl * pl = (R2F2UPl *)data;
     printf("Found solution: ");
-    cube_print_standard_solution(moves, count);
+    pl_moveset_print_solution(&pl->moveset, moves, count);
     printf("\n");
 }
 

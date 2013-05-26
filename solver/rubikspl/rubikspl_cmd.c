@@ -8,7 +8,7 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
     RubiksPl pluginInfo;
     RubiksMap * premoves = NULL;
     pluginInfo.heuristics = heuristic_list_new();
-    rubikspl_context_new_default(&pluginInfo);
+    pl_moveset_initialize(&pluginInfo.moveset);
     generate_user_info(&solveUserInfo);
     solveUserInfo.userData = &pluginInfo;
     
@@ -45,33 +45,14 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
             continue;
         }
         // moveset arguments
-        if (strcmp(argv[i], "--double") == 0) {
-            rubikspl_context_free(pluginInfo);
-            rubikspl_context_new_double(&pluginInfo);
+        if (parse_moveset_argument(&pluginInfo.moveset, argv[i])) {
             continue;
-        }
-        if (strlen(argv[i]) >= strlen("--maxfaces=")) {
-            if (strncmp(argv[i], "--maxfaces=", strlen("--maxfaces=")) == 0) {
-                if (pluginInfo.moveset != RubiksPlMovesetDefault) {
-                    rubikspl_context_free(pluginInfo);
-                    rubikspl_context_new_default(&pluginInfo);
-                }
-                pluginInfo.maxIndepFaces = atoi(&argv[i][strlen("--maxfaces=")]);
-                continue;
-            }
-        }
-        if (strlen(argv[i]) >= strlen("--operations=")) {
-            if (strncmp(argv[i], "--operations=", strlen("--operations=")) == 0) {
-                rubikspl_context_free(pluginInfo);
-                rubikspl_context_new_custom(&pluginInfo, &argv[i][strlen("--operations=")]);
-                continue;
-            }
         }
         fprintf(stderr, "error: unknown option `%s`\n", argv[i]);
         goto freeAndReturn;
     }
     
-    solveUserInfo.operationCount = pluginInfo.operationCount;
+    solveUserInfo.operationCount = pluginInfo.moveset.operationCount;
     
     RubiksMap * scramble = rubiks_map_user_input_premoves(premoves);
     if (!scramble) {
@@ -86,7 +67,7 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
     
 freeAndReturn:
     rubikspl_context_free(pluginInfo);
-    heuristic_list_free(pluginInfo.heuristics);
+    if (premoves) rubiks_map_free(premoves);
 }
 
 static void printUsage() {

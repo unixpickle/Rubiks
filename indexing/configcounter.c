@@ -10,7 +10,6 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                  int maxDepth,
                                  char * previousMoves,
                                  RubiksMap * nodeMap,
-                                 RubiksMap ** operations,
                                  ShardNode * root,
                                  int indexCount);
 
@@ -20,19 +19,14 @@ ShardNode * cc_compute_table(CCUserInfo info) {
     }
     info.nodesExpanded = 0;
     ShardNode * baseNode = shard_node_new(info.shardDepth);
-    RubiksMap ** operations = cube_standard_face_turns();
     char previousMoves[1];
     int i;
     for (i = 0; i <= info.maximumDepth; i++) {
         printf("Performing search with depth of %d\n", i);
         _cc_recursive_search(&info, 0, i, previousMoves,
-                             info.identity, operations, baseNode,
+                             info.identity, baseNode,
                              index_type_data_size(info.indexType));
     }
-    for (i = 0; i < kConfigCounterMoveCount; i++) {
-        rubiks_map_free(operations[i]);
-    }
-    free(operations);
     printf("Expanded a total of %d nodes.\n", info.nodesExpanded);
     return baseNode;
 }
@@ -42,7 +36,6 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                  int maxDepth,
                                  char * previousMoves,
                                  RubiksMap * nodeMap,
-                                 RubiksMap ** operations,
                                  ShardNode * root,
                                  int indexCount) {
     // generate the map data
@@ -84,31 +77,20 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
     int i;
     RubiksMap * deeperCube = rubiks_map_new_identity();
     char lastMove = depth > 0 ? previousMoves[depth - 1] : -1;
-    for (i = 0; i < kConfigCounterMoveCount; i++) {
-        
-        // remove redundant commutative chains
-        if (depth > 0) {
-            if (lastMove % 2 == 1) {
-                // on an odd move; this is where we limit it
-                if ((i % 6) + 1 == lastMove % 6) {
-                    // we don't perform a commuting even move from an odd move
-                    continue;
-                }
-            }
-            if (lastMove >= 12 && i == lastMove) continue;
-            if (lastMove < 12 && i % 6 == lastMove % 6 && i != lastMove) {
-                // we are making an inverse of the previous move
-                continue;
-            }
-        }
+    for (i = 0; i < userInfo->moveset.operationCount; i++) {
         nextPrevious[depth] = i;
-        rubiks_map_multiply(deeperCube, operations[i], nodeMap);
+        
+        if (!pl_moveset_accepts_sequence(&userInfo->moveset, nextPrevious, depth + 1)) {
+            continue;
+        }
+        
+        RubiksMap * leftOp = userInfo->moveset.operations[i];
+        rubiks_map_multiply(deeperCube, leftOp, nodeMap);
         _cc_recursive_search(userInfo,
                              depth + 1,
                              maxDepth,
                              nextPrevious,
                              deeperCube,
-                             operations,
                              root,
                              indexCount);
     }

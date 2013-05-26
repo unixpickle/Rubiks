@@ -100,7 +100,6 @@ RubiksMap * rubiks_map_inverse(RubiksMap * map) {
 
 void rubiks_map_multiply(RubiksMap * out, RubiksMap * left, RubiksMap * right) {
     // NOTE: the left map describes its operation on the identity cube.
-
     int i;
     // multiply the corners first
     for (i = 0; i < 8; i++) {

@@ -25,7 +25,7 @@ int main(int argc, const char * argv[]) {
 }
 
 void performProfile(ShardNode * node, long long dataSize) {
-    printf("Enumerating %u nodes\n", node->nodeDataSize);
+    printf("Enumerating %llu nodes\n", node->nodeDataSize);
     int instanceCount[256];
     bzero(instanceCount, sizeof(instanceCount));
     long long i;

@@ -1,7 +1,7 @@
 main: indexmaker
 
 indexmaker: configcounter.o
-	gcc configcounter.o ../representation/cube.o indexmaker.c -o indexmaker -I../
+	gcc configcounter.o ../representation/cube.o ../util/cmdutil.o ../util/pltools.o indexmaker.c -o indexmaker -I../
 
 configcounter.o: configcounter.c index.o
 	gcc -c configcounter.c -I../ -o _configcounter.o

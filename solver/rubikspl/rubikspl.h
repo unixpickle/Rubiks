@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "representation/cube.h"
 #include "solver/heuristic.h"
-#include "solver/pltools.h"
+#include "util/pltools.h"
 
 typedef enum {
     RubiksPlMovesetDefault,
@@ -10,18 +10,11 @@ typedef enum {
 } RubiksPlMoveset;
 
 typedef struct {
-    RubiksMap ** operations;
-    char ** descriptions;
-    int operationCount;
-    int maxIndepFaces;
-    RubiksPlMoveset moveset;
+    PlMoveset moveset;
     HeuristicList * heuristics;
 } RubiksPl;
 
 void rubikspl_context_free(RubiksPl pl);
-void rubikspl_context_new_default(RubiksPl * pl);
-void rubikspl_context_new_double(RubiksPl * pl);
-void rubikspl_context_new_custom(RubiksPl * pl, const char * moveSet);
 
 void * rubikspl_create_group_identity(void * data);
 void rubikspl_free_group_object(void * data, void * object);

@@ -2,7 +2,7 @@
 #include "representation/cube.h"
 #include "indexing/subproblemindices.h"
 #include "solver/heuristic.h"
-#include "solver/pltools.h"
+#include "util/pltools.h"
 
 typedef struct {
     HeuristicTable * heuristic;

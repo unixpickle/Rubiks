@@ -1,1 +1,0 @@
-int standard_operations_validate(const char * moves, int count);

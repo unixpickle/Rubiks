@@ -7,6 +7,7 @@
 #include "shard.h"
 #include "representation/cube.h"
 #include "index.h"
+#include "util/pltools.h"
 
 typedef struct {
     IndexType indexType;
@@ -14,6 +15,8 @@ typedef struct {
     int maximumDepth;
     int nodesExpanded;
     RubiksMap * identity;
+    
+    PlMoveset moveset;
 } CCUserInfo;
 
 // retreiving and working with tables

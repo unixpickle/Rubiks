@@ -14,8 +14,8 @@ typedef struct {
     // node data for base nodes
     unsigned char depthRemaining; // 0 means this is a base node
     unsigned char * nodeData;
-    unsigned int nodeDataSize;
-    unsigned int nodeDataAlloc;
+    unsigned long long nodeDataSize;
+    unsigned long long nodeDataAlloc;
 } ShardNode;
 
 ShardNode * shard_node_new(int depthRem);

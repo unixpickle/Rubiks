@@ -1,4 +1,4 @@
-main: legacy_build test_build korfsolver_build pocketcube_build solver_build
+main: legacy_build test_build util_build korfsolver_build pocketcube_build solver_build
 
 pocketcube_build: representation_build indexing_build
 	cd pocketcube && make
@@ -17,6 +17,9 @@ indexing_build: representation_build
 
 representation_build:
 	cd representation && make
+
+util_build:
+	cd util && make
 
 solver_build:
 	cd solver && make

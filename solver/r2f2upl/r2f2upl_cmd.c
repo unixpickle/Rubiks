@@ -10,6 +10,9 @@ void r2f2upl_cmd_main(int argc, const char * argv[]) {
     R2F2UPl pluginInfo;
     pluginInfo.heuristic = NULL;
     r2f2upl_initialize(&pluginInfo);
+    
+    RubiksMap * premoves = NULL;
+    
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--help") == 0) {
             printUsage();
@@ -25,11 +28,22 @@ void r2f2upl_cmd_main(int argc, const char * argv[]) {
         int result = parse_heuristic_argument(&pluginInfo.heuristic, argv[i]);
         if (result == 1) continue;
         if (result < 0) goto freeAndReturn;
+        if (parse_moveset_argument(&pluginInfo.moveset, argv[i])) {
+            continue;
+        }
+        RubiksMap * possibleMap = NULL;
+        possibleMap = parse_premoves_argument(argv[i]);
+        if (possibleMap) {
+            premoves = possibleMap;
+            continue;
+        }
         fprintf(stderr, "error: unknown option `%s`\n", argv[i]);
         goto freeAndReturn;
     }
+        
+    userInfo.operationCount = pluginInfo.moveset.operationCount;
     
-    RubiksMap * map = rubiks_map_user_input();
+    RubiksMap * map = rubiks_map_user_input_premoves(premoves);
     if (!map) {
         fprintf(stderr, "error: invalid scramble!\n");
         goto freeAndReturn;
@@ -44,10 +58,7 @@ void r2f2upl_cmd_main(int argc, const char * argv[]) {
     
 freeAndReturn:
     r2f2upl_free(pluginInfo);
-    if (pluginInfo.heuristic) {
-        heuristic_table_free(pluginInfo.heuristic);
-    }
-    return;
+    if (premoves) rubiks_map_free(premoves);
 }
 
 static void printUsage() {

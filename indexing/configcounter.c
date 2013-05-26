@@ -52,13 +52,8 @@ static void _cc_recursive_search(CCUserInfo * userInfo,
                                                    entryDataLength, 2);
     // if the information exists, check if we are done with this node
     if (entry) {
-        if (userInfo->indexType != IndexTypeEdgeBack &&
-            userInfo->indexType != IndexTypeEdgeFront) {
-            if (entry[entryDataLength - 2] < depth) return;
-            if (memcmp(&entry[entryDataLength - 2], &mapData[indexCount], 2) == 0) return;
-        } else {
-            if (entry[entryDataLength - 1] == maxDepth && depth == maxDepth) return;
-        }
+        if (entry[entryDataLength - 2] < depth) return;
+        if (memcmp(&entry[entryDataLength - 2], &mapData[indexCount], 2) == 0) return;
         // prevent future nodes from being explored
         entry[entryDataLength - 1] = maxDepth;
     } else {

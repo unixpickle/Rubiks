@@ -2,10 +2,11 @@
 #include "representation/cube.h"
 #include "solver/heuristic.h"
 #include "util/pltools.h"
+#include "util/cmdutil.h"
 
 typedef struct {
     HeuristicTable * edgeHeuristic;
-    RubiksMap ** operations;
+    PlMoveset moveset;
 } OrientPl;
 
 void orientpl_initialize(OrientPl * pl);

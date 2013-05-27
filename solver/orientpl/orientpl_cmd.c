@@ -10,6 +10,7 @@ void orientpl_cmd_main(int argc, const char * argv[]) {
     OrientPl pluginInfo;
     pluginInfo.edgeHeuristic = NULL;
     orientpl_initialize(&pluginInfo);
+    RubiksMap * premoves = NULL;
     for (i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--help") == 0) {
             printUsage();
@@ -25,16 +26,31 @@ void orientpl_cmd_main(int argc, const char * argv[]) {
         int result = parse_heuristic_argument(&pluginInfo.edgeHeuristic, argv[i]);
         if (result == 1) continue;
         if (result < 0) goto freeAndReturn;
+        
+        RubiksMap * possibleMap = NULL;
+        possibleMap = parse_premoves_argument(argv[i]);
+        if (possibleMap) {
+            premoves = possibleMap;
+            continue;
+        }
+        
+        if (parse_moveset_argument(&pluginInfo.moveset, argv[i])) {
+            continue;
+        }
+        
         fprintf(stderr, "error: unknown option `%s`\n", argv[i]);
         goto freeAndReturn;
     }
     
-    RubiksMap * map = rubiks_map_user_input();
+    RubiksMap * map = rubiks_map_user_input_premoves(premoves);
     if (!map) {
         fprintf(stderr, "error: invalid scramble!\n");
         goto freeAndReturn;
     }
     
+    printf("%u is the thing\n", rubiks_map_edge_orientations(map));
+    
+    userInfo.operationCount = pluginInfo.moveset.operationCount;
     userInfo.userData = &pluginInfo;
     userInfo.startObject = map;
     
@@ -44,9 +60,6 @@ void orientpl_cmd_main(int argc, const char * argv[]) {
     
 freeAndReturn:
     orientpl_free(pluginInfo);
-    if (pluginInfo.edgeHeuristic) {
-        heuristic_table_free(pluginInfo.edgeHeuristic);
-    }
     return;
 }
 

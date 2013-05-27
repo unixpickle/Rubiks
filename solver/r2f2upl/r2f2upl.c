@@ -50,7 +50,7 @@ int r2f2upl_heuristic_exceeds(void * data, void * object, int maxMoves) {
 
 void r2f2upl_report_solution(void * data, unsigned char * moves, int count) {
     R2F2UPl * pl = (R2F2UPl *)data;
-    printf("Found solution: ");
+    printf("Found solution:");
     pl_moveset_print_solution(&pl->moveset, moves, count);
     printf("\n");
 }

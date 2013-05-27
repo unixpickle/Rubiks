@@ -1,15 +1,14 @@
 #include "orientpl.h"
 
 void orientpl_initialize(OrientPl * pl) {
-    pl->operations = cube_standard_face_turns();
+    pl_moveset_initialize(&pl->moveset);
 }
 
 void orientpl_free(OrientPl pl) {
-    int i;
-    for (i = 0; i < 18; i++) {
-        rubiks_map_free(pl.operations[i]);
+    pl_moveset_free(&pl.moveset);
+    if (pl.edgeHeuristic) {
+        heuristic_table_free(pl.edgeHeuristic);
     }
-    free(pl.operations);
 }
 
 void * orientpl_create_group_identity(void * data) {
@@ -22,7 +21,7 @@ void orientpl_free_group_object(void * data, void * object) {
 
 void orientpl_operate(void * data, void * destination, void * object, int operation) {
     OrientPl * pl = (OrientPl *)data;
-    rubiks_map_multiply(destination, pl->operations[operation], object);
+    rubiks_map_multiply(destination, pl->moveset.operations[operation], object);
 }
 
 int orientpl_is_goal(void * data, void * object) {
@@ -44,8 +43,9 @@ int orientpl_heuristic_exceeds(void * data, void * object, int maxMoves) {
 }
 
 void orientpl_report_solution(void * data, unsigned char * moves, int count) {
-    printf("Found solution: ");
-    cube_print_standard_solution(moves, count);
+    printf("Found solution:");
+    OrientPl * pl = (OrientPl *)data;
+    pl_moveset_print_solution(&pl->moveset, moves, count);
     printf("\n");
 }
 

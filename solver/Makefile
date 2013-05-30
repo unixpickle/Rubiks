@@ -37,5 +37,4 @@ heuristic.o: heuristic.c
 	gcc -O2 -c heuristic.c -I../
 
 clean:
-	rm *.o
 	rm solver

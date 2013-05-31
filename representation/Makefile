@@ -1,8 +1,8 @@
 main: cube.o
 
 cube.o: rubiksmap.o
-	gcc -O2 -c cube.c -o _cube.o
-	ld -r _cube.o rubiksmap.o -o cube.o
+	gcc -O2 -c cube.c -o _cube.o -I../
+	ld -r _cube.o rubiksmap.o ../math/parity.o -o cube.o
 	rm _cube.o
 
 rubiksmap.o: stickermap.o symmetry.o

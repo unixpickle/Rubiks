@@ -1,4 +1,7 @@
-main: legacy_build test_build util_build korfsolver_build pocketcube_build solver_build
+main: math_build util_build legacy_build test_build korfsolver_build pocketcube_build solver_build
+
+math_build:
+	cd math && make
 
 pocketcube_build: representation_build indexing_build
 	cd pocketcube && make
@@ -25,6 +28,8 @@ solver_build:
 	cd solver && make
 
 clean:
+	cd math && make clean
+	cd util && make clean
 	cd legacy && make clean
 	cd representation && make clean
 	cd indexing && make clean

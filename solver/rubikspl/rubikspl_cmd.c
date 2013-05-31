@@ -54,7 +54,7 @@ void rubikspl_cmd_main(int argc, const char * argv[]) {
     
     solveUserInfo.operationCount = pluginInfo.moveset.operationCount;
     
-    RubiksMap * scramble = rubiks_map_user_input_premoves(premoves);
+    RubiksMap * scramble = cube_validated_user_input(premoves);
     if (!scramble) {
         fprintf(stderr, "error: failed to read scramble!\n");
         goto freeAndReturn;

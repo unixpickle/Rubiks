@@ -2,6 +2,25 @@
 
 static RubiksMap * _map_with_index_identifier(int index);
 
+RubiksMap * cube_validated_user_input(RubiksMap * premoves) {
+    RubiksMap * map = rubiks_map_user_input_premoves(premoves);
+    if (!map) {
+        fprintf(stderr, "Invalid sticker data!\n");
+        return NULL;
+    }
+    int status = validate_map(map);
+    if (!status) return map;
+    rubiks_map_free(map);
+    if (status == 1) {
+        fprintf(stderr, "Invalid swap parity\n");
+    } else if (status == 2) {
+        fprintf(stderr, "Invalid edge orientations\n");
+    } else if (status == 3) {
+        fprintf(stderr, "Invalid corner orientations\n");
+    }
+    return NULL;
+}
+
 RubiksMap ** cube_standard_face_turns() {
     RubiksMap ** operations = malloc(sizeof(RubiksMap *) * 18);
     int i;

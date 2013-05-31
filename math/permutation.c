@@ -43,7 +43,7 @@ Perm * perm_from_bytes(const uint8_t * rawPerm, uint8_t mask, uint8_t len) {
     p->length = len;
     int i;
     for (i = 0; i < len; i++) {
-        p->map[i] = rawPerm[i];
+        p->map[i] = rawPerm[i] & mask;
     }
     return p;
 }
@@ -151,12 +151,14 @@ int perm_parity(Perm * perm) {
         if (temp->map[i] == i) continue;
         int wantIndex = 0, j;
         for (j = i + 1; j < perm->length; j++) {
-            if (perm->map[j] == i) {
+            if (temp->map[j] == i) {
                 wantIndex = j;
                 break;
             }
         }
-        if (wantIndex <= i) abort();
+        if (wantIndex <= i) {
+            abort();
+        }
         int swapValue = temp->map[i];
         temp->map[i] = i;
         temp->map[wantIndex] = swapValue;

@@ -1,3 +1,6 @@
+#ifndef __PERMUTATION_H__
+#define __PERMUTATION_H__
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -34,3 +37,5 @@ void perm_free(Perm * perm);
 void perm_list_init(PermList * list);
 void perm_list_append(PermList * list, Perm * p);
 void perm_list_destroy(PermList * list);
+
+#endif

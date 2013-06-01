@@ -253,6 +253,24 @@ StickerMap ** sticker_map_standard_face_turns() {
     return operations;
 }
 
+const char * sticker_map_to_user_string(StickerMap * map) {
+    static char buffer[64];
+    const int * indicesList[] = {frontIndices, backIndices, topIndices,
+                                 bottomIndices, rightIndices, leftIndices};
+    bzero(buffer, 64);
+    int i;
+    for (i = 0; i < 6; i++) {
+        int index = 10 * i;
+        int j;
+        const int * indices = indicesList[i];
+        for (j = 0; j < 9; j++) {
+            buffer[index + j] = '1' - 1 + map->indices[indices[j]];
+        }
+        if (i != 5) buffer[index + 9] = '\n';
+    }
+    return buffer;
+}
+
 static int _sticker_map_apply_face(StickerMap * map, const int * indices, const char * str) {
     int i;
     for (i = 0; i < 9; i++) {

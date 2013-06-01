@@ -1,4 +1,7 @@
-all: permsqrt parity.o
+all: permsqrt parity.o cubeperm.o
+
+cubeperm.o:
+	gcc -c cubeperm.c -I../
 
 permsqrt: permutation.o
 	gcc permutation.o permsqrt.c -o permsqrt

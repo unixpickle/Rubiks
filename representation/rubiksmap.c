@@ -284,7 +284,7 @@ RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers) {
 }
 
 StickerMap * rubiks_map_to_sticker_map(RubiksMap * map) {
-    StickerMap * output = sticker_map_new_identity();
+    StickerMap * output = sticker_map_identity();
     int i,j;
     // corner piece conversions
     for (i = 0; i < 8; i++) {

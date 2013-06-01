@@ -1,6 +1,6 @@
 #include "parity.h"
 
-int CornerChain[] = {0, 1, 3, 2, 6, 7, 5, 4};
+static const int CornerChain[] = {0, 1, 3, 2, 6, 7, 5, 4};
 
 static int is_symmetry_z_invariant(int sym);
 

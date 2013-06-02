@@ -101,7 +101,12 @@ static void pointer_list_free(PointerList * list, int freeDeep) {
 }
 
 static void pointer_list_add_list(PointerList * list, const PointerList * addList) {
-    list->pointers = (void **)malloc(sizeof(void *) * (list->length + addList->length));
+    if (!list->pointers) {
+        list->pointers = (void **)malloc(sizeof(void *) * (list->length + addList->length));
+    } else {
+        list->pointers = (void **)realloc(list->pointers, 
+                                          sizeof(void *) * (list->length + addList->length));
+    }
     memcpy(&list->pointers[list->length], addList->pointers,
            addList->length * sizeof(void *));
     list->length += addList->length;

@@ -48,8 +48,6 @@ void orientpl_cmd_main(int argc, const char * argv[]) {
         goto freeAndReturn;
     }
     
-    printf("%u is the thing\n", rubiks_map_edge_orientations(map));
-    
     userInfo.operationCount = pluginInfo.moveset.operationCount;
     userInfo.userData = &pluginInfo;
     userInfo.startObject = map;

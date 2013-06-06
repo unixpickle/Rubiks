@@ -226,6 +226,9 @@ RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers) {
     // doing a task like this requires a LOT of patients...and organization
     RubiksMap * map = rubiks_map_new_identity();
 
+    uint8_t cornersFound = 0;
+    uint16_t edgesFound = 0;
+
     int i, j;
     // place each of the corners
     for (i = 0; i < 8; i++) {
@@ -251,7 +254,14 @@ RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers) {
             return NULL;
         }
         map->pieces[i] = realIndex | (symmetry << 4);
+        cornersFound |= 1 << realIndex;
     }
+    if (cornersFound != 0xff) {
+        printf("corner piece missing\n");
+        rubiks_map_free(map);
+        return NULL;
+    }
+    
     // place all of the edge pieces
     for (i = 0; i < 12; i++) {
         unsigned char realColors[3];
@@ -279,6 +289,12 @@ RubiksMap * rubiks_map_from_sticker_map(StickerMap * stickers) {
             return NULL;
         }
         map->pieces[i + 8] = realIndex | (symmetry << 4);
+        edgesFound |= 1 << realIndex;
+    }
+    if (edgesFound != 0xfff) {
+        printf("edge piece missing\n");
+        rubiks_map_free(map);
+        return NULL;
     }
     return map;
 }

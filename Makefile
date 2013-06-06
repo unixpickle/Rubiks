@@ -1,7 +1,10 @@
-main: math_build util_build legacy_build test_build korfsolver_build pocketcube_build solver_build roots_build
+main: math_build util_build legacy_build test_build korfsolver_build pocketcube_build solver_build roots_build random_build
 
 roots_build: representation_build math_build util_build
 	cd math/roots && make
+
+random_build: representation_build math_build util_build
+	cd math/random && make
 
 math_build:
 	cd math && make
@@ -41,3 +44,4 @@ clean:
 	cd pocketcube && make clean
 	cd solver && make clean
 	cd math/roots && make clean
+	cd math/random && make clean

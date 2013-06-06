@@ -195,6 +195,12 @@ static int sa_solve_recursive_method(SAThreadInfo * info, int currentDepth, void
         printf("\n");*/
         if (userInfo->is_goal(userData, object)) {
             pthread_mutex_lock(&info->solveInfo->lock);
+            
+            if (info->solveInfo->isCancelled) {
+                pthread_mutex_unlock(&info->solveInfo->lock);
+                return 0;
+            }
+            
             userInfo->report_solution(userData, info->lastMoves, currentDepth);
             pthread_mutex_unlock(&info->solveInfo->lock);
             if (!userInfo->multipleSolutions) {

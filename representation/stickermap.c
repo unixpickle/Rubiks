@@ -133,12 +133,12 @@ StickerMap * sticker_map_user_input() {
     StickerMap * map = sticker_map_new_identity();
     char inputString[64];
     printf("Colors:\n\
-           white:   1\n\
-           yellow:  2\n\
-           blue:    3\n\
-           green:   4\n\
-           red:     5\n\
-           orange:  6\n\n");
+           front: 1\n\
+           back:  2\n\
+           up:    3\n\
+           down:  4\n\
+           right: 5\n\
+           left:  6\n\n");
     printf("** Enter colors from left-to-right top-to-bottom.**\n");
     printf("Enter first side: ");
     fflush(stdout);

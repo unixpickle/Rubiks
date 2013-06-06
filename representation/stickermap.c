@@ -1,6 +1,8 @@
 #include "stickermap.h"
 
 static int _sticker_map_apply_face(StickerMap * map, const int * indices, const char * str);
+static int _sticker_map_apply_face_cont(StickerMap * map, const int * indices,
+                                        const char * str, int color);
 
 StickerMap * sticker_map_new_identity() {
     StickerMap * map = (StickerMap *)malloc(sizeof(StickerMap));
@@ -140,30 +142,30 @@ StickerMap * sticker_map_user_input() {
            right: 5\n\
            left:  6\n\n");
     printf("** Enter colors from left-to-right top-to-bottom.**\n");
-    printf("Enter first side: ");
+    printf("Enter front side: ");
     fflush(stdout);
     fgets(inputString, 64, stdin);
-    if (!_sticker_map_apply_face(map, frontIndices, inputString)) goto failureHandler;
-    printf("Enter back side (turn around vertical axis): ");
+    if (!_sticker_map_apply_face_cont(map, frontIndices, inputString, 1)) goto failureHandler;
+    printf("Enter back side (Y2): ");
     fflush(stdout);
     fgets(inputString, 64, stdin);
-    if (!_sticker_map_apply_face(map, backIndices, inputString)) goto failureHandler;
-    printf("Enter top side: ");
+    if (!_sticker_map_apply_face_cont(map, backIndices, inputString, 2)) goto failureHandler;
+    printf("Enter up side (Y2 X): ");
     fflush(stdout);
     fgets(inputString, 64, stdin);
-    if (!_sticker_map_apply_face(map, topIndices, inputString)) goto failureHandler;
-    printf("Enter bottom side: ");
+    if (!_sticker_map_apply_face_cont(map, topIndices, inputString, 3)) goto failureHandler;
+    printf("Enter down side (X2): ");
     fflush(stdout);
     fgets(inputString, 64, stdin);
-    if (!_sticker_map_apply_face(map, bottomIndices, inputString)) goto failureHandler;
-    printf("Enter right side: ");
+    if (!_sticker_map_apply_face_cont(map, bottomIndices, inputString, 4)) goto failureHandler;
+    printf("Enter right side (X Y): ");
     fflush(stdout);
     fgets(inputString, 64, stdin);
-    if (!_sticker_map_apply_face(map, rightIndices, inputString)) goto failureHandler;
-    printf("Enter left side: ");
+    if (!_sticker_map_apply_face_cont(map, rightIndices, inputString, 5)) goto failureHandler;
+    printf("Enter left side (Y2): ");
     fflush(stdout);
     fgets(inputString, 64, stdin);
-    if (!_sticker_map_apply_face(map, leftIndices, inputString)) goto failureHandler;
+    if (!_sticker_map_apply_face_cont(map, leftIndices, inputString, 6)) goto failureHandler;
     return map;
     
 failureHandler:
@@ -272,12 +274,24 @@ const char * sticker_map_to_user_string(StickerMap * map) {
 }
 
 static int _sticker_map_apply_face(StickerMap * map, const int * indices, const char * str) {
+    return _sticker_map_apply_face_cont(map, indices, str, 0);
+}
+
+static int _sticker_map_apply_face_cont(StickerMap * map, const int * indices,
+                                        const char * str, int color) {
     int i;
+    int numRead = 0;
     for (i = 0; i < 9; i++) {
         char c = str[i];
+        if (c == '\n' || c == 0) break;
         if (c < '1' || c > '6') return 0;
         unsigned char value = (unsigned char)c - '1' + 1;
         map->indices[indices[i]] = value;
+        numRead++;
+    }
+    if (color < 1 && numRead != 9) return 0;
+    for (i = numRead; i < 9; i++) {
+        map->indices[indices[i]] = color;
     }
     return 1;
 }

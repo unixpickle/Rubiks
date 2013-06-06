@@ -202,11 +202,10 @@ static int sa_solve_recursive_method(SAThreadInfo * info, int currentDepth, void
             }
             
             userInfo->report_solution(userData, info->lastMoves, currentDepth);
-            pthread_mutex_unlock(&info->solveInfo->lock);
             if (!userInfo->multipleSolutions) {
-                sa_cancel_solve(info);
-                return 0;
+                info->solveInfo->isCancelled = 1;
             }
+            pthread_mutex_unlock(&info->solveInfo->lock);
         }
         return 1;
     }

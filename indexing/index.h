@@ -27,7 +27,8 @@ typedef enum {
     IndexTypeCross6 = 19,
     IndexTypeR2F2UGroup = 20,
     IndexTypeEdgeFirst = 21,
-    IndexTypeEdgeSecond = 22
+    IndexTypeEdgeSecond = 22,
+    IndexTypeEdgePermutation = 23
 } IndexType;
 
 IndexType index_type_from_string(const char * str);

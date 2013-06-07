@@ -5,7 +5,7 @@ static const char * SubproblemNames[] = {"unknown", "edgefront", "edgeback", "ed
     "block0", "block1", "block2", "block3", "block4",
     "block5", "block6", "block7", "cross1", "cross2",
     "cross3", "cross4", "cross5", "cross6",
-    "R2F2U", "edgefirst", "edgesecond"};
+    "R2F2U", "edgefirst", "edgesecond", "edgeperm"};
 
 static void _index_recursive_write(FILE * output, ShardNode * node,
         unsigned char * data, int depth,
@@ -15,11 +15,11 @@ static void _index_copy_edge_data(RubiksMap * map, IndexType it, unsigned char *
 static void _index_copy_block_data(RubiksMap * map, IndexType it, unsigned char * data);
 static void _index_copy_cross_data(RubiksMap * map, IndexType it, unsigned char * data);
 static void _index_copy_r2f2u_data(RubiksMap * map, IndexType it, unsigned char * data);
-
+static void _index_copy_edge_permutation_data(RubiksMap * map, unsigned char * data);
 
 IndexType index_type_from_string(const char * str) {
     int i;
-    for (i = 0; i < 23; i++) {
+    for (i = 0; i < 24; i++) {
         if (strcmp(str, SubproblemNames[i]) == 0) {
             return i;
         }
@@ -62,6 +62,8 @@ void index_type_copy_data(IndexType it, unsigned char * data, RubiksMap * map) {
         _index_copy_r2f2u_data(map, it, data);
     } else if (it == IndexTypeEdgeFirst || it == IndexTypeEdgeSecond) {
         _index_copy_edge_data(map, it, data);
+    } else if (it == IndexTypeEdgePermutation) {
+        _index_copy_edge_permutation_data(map, data);
     }
 }
 
@@ -93,7 +95,7 @@ ShardNode * index_file_read(const char * path,
     if (memcmp(buffer, "ANC2", 4) != 0) goto failure;
     unsigned char typeChar = 0;
     if (fread(&typeChar, 1, 1, fp) != 1) goto failure;
-    if (typeChar < 1 || typeChar > 22) goto failure; // not a known type
+    if (typeChar < 1 || typeChar > 23) goto failure; // not a known type
     *t = typeChar;
     if (fread(moveMax, 1, 1, fp) != 1) goto failure;
 
@@ -127,21 +129,21 @@ static void _index_recursive_write(FILE * output, ShardNode * node,
                                    unsigned char * data, int depth,
                                    int entrySize, int writeSize) {
     if (depth > 0) {
-    data[depth - 1] = node->nodeCharacter;
+        data[depth - 1] = node->nodeCharacter;
     }
     long long i;
     if (node->depthRemaining == 0) {
-    // just write the data, straightup
-    for (i = 0; i < node->nodeDataSize; i++) {
-        unsigned char * restData = &node->nodeData[(entrySize - depth) * i];
-        memcpy(&data[depth], restData, writeSize - depth);
-        fwrite(data, 1, writeSize, output);
-    }
-    return;
+        // just write the data, straightup
+        for (i = 0; i < node->nodeDataSize; i++) {
+            unsigned char * restData = &node->nodeData[(entrySize - depth) * i];
+            memcpy(&data[depth], restData, writeSize - depth);
+            fwrite(data, 1, writeSize, output);
+        }
+        return;
     }
     for (i = 0; i < node->subnodeCount; i++) {
-    _index_recursive_write(output, node->subnodes[i], data,
-                   depth + 1, entrySize, writeSize);
+        _index_recursive_write(output, node->subnodes[i], data,
+                               depth + 1, entrySize, writeSize);
     }
 }
 
@@ -227,4 +229,15 @@ static void _index_copy_r2f2u_data(RubiksMap * map, IndexType it, unsigned char 
     
     data[4] = symmetrized[2] & 0xff;
     data[5] = (symmetrized[2] >> 8) & 0xff;
+}
+
+static void _index_copy_edge_permutation_data(RubiksMap * map, unsigned char * data) {
+    bzero(data, 6);
+    int i;
+    for (i = 0; i < 12; i++) {
+        uint8_t byte = map->pieces[i + 8];
+        int shift = (i % 2 == 0 ? 0 : 4);
+        int index = i / 2;
+        data[index] |= (byte & 0xf) << shift;
+    }
 }

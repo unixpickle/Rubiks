@@ -130,10 +130,6 @@ ShardNode * index_file_read(const char * path,
         dataRead += got;
     }
     
-    if (fread(node->nodeData, 1, offset - 6, fp) != offset - 6) {
-        shard_node_free(node);
-        goto failure;
-    }
     return node;
     
 failure:

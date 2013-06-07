@@ -1,5 +1,7 @@
 #include "index.h"
 
+#define kBufferSize (1 << 24)
+
 static const char * SubproblemNames[] = {"unknown", "edgefront", "edgeback", "edgeall",
     "corners", "eo",
     "block0", "block1", "block2", "block3", "block4",
@@ -100,7 +102,7 @@ ShardNode * index_file_read(const char * path,
     if (fread(moveMax, 1, 1, fp) != 1) goto failure;
 
     // calculate the data size and entry count
-    int dataSize = index_type_data_size(*t) + 1;
+    long long dataSize = index_type_data_size(*t) + 1;
     fseek(fp, 0, SEEK_END);
     long long offset = ftello(fp);
     fseek(fp, 6, SEEK_SET);
@@ -114,6 +116,20 @@ ShardNode * index_file_read(const char * path,
     node->nodeData = (unsigned char *)malloc(offset - 6);
     node->nodeDataAlloc = entryCount;
     node->nodeDataSize = entryCount;
+    
+    // read the file in chunks
+    long long dataRead = 0;
+    while (dataRead < offset - 6) {
+        long long remaining = offset - 6 - dataRead;
+        long long chunk = remaining < kBufferSize ? remaining : kBufferSize;
+        long long got = fread(&node->nodeData[dataRead], 1, chunk, fp);
+        if (got != chunk) {
+            shard_node_free(node);
+            goto failure;
+        }
+        dataRead += got;
+    }
+    
     if (fread(node->nodeData, 1, offset - 6, fp) != offset - 6) {
         shard_node_free(node);
         goto failure;
@@ -172,22 +188,22 @@ static void _index_copy_block_data(RubiksMap * map, IndexType it, unsigned char 
     int i;
     // find the block index corner
     for (i = 0; i < 8; i++) {
-    if ((map->pieces[i] & 0xf) == blockIndex) {
-        data[0] = i;
-        data[0] |= map->pieces[i] & 0xf0;
-        break;
-    }
+        if ((map->pieces[i] & 0xf) == blockIndex) {
+            data[0] = i;
+            data[0] |= map->pieces[i] & 0xf0;
+            break;
+        }
     }
     // find the block edges
     for (i = 0; i < 12; i++) {
-    int j;
-    for (j = 0; j < 3; j++) {
-        int seeking = BlockEdgeIndices[blockIndex][j];
-        if ((map->pieces[i + 8] & 0xf) == seeking) {
-        data[j + 1] = i;
-        data[j + 1] |= map->pieces[i + 8] & 0xf0;
+        int j;
+        for (j = 0; j < 3; j++) {
+            int seeking = BlockEdgeIndices[blockIndex][j];
+            if ((map->pieces[i + 8] & 0xf) == seeking) {
+                data[j + 1] = i;
+                data[j + 1] |= map->pieces[i + 8] & 0xf0;
+            }
         }
-    }
     }
 }
 
@@ -195,14 +211,14 @@ static void _index_copy_cross_data(RubiksMap * map, IndexType it, unsigned char 
     int crossIndex = it - 14, i;
     const unsigned char * crossIndices = CrossEdgeIndices[crossIndex];
     for (i = 0; i < 12; i++) {
-    int j;
-    for (j = 0; j < 4; j++) {
-        int seeking = crossIndices[j];
-        if ((map->pieces[i + 8] & 0xf) == seeking) {
-        data[j] = i;
-        data[j] |= map->pieces[i + 8] & 0xf0;
+        int j;
+        for (j = 0; j < 4; j++) {
+            int seeking = crossIndices[j];
+            if ((map->pieces[i + 8] & 0xf) == seeking) {
+                data[j] = i;
+                data[j] |= map->pieces[i + 8] & 0xf0;
+            }
         }
-    }
     }
 }
 

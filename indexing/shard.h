@@ -18,7 +18,7 @@ typedef struct {
     unsigned long long nodeDataAlloc;
 } ShardNode;
 
-ShardNode * shard_node_new(int depthRem);
+ShardNode * shard_node_new(long long depthRem);
 void shard_node_free(ShardNode * node);
 
 /**
@@ -29,8 +29,8 @@ void shard_node_free(ShardNode * node);
  */
 ShardNode * shard_node_search_base(ShardNode * root,
                                    const unsigned char * entry,
-                                   int entrySize,
-                                   int create);
+                                   long long entrySize,
+                                   long long create);
 
 /**
  * Adds an entry to the appropriate base node for it.
@@ -42,15 +42,15 @@ ShardNode * shard_node_search_base(ShardNode * root,
  */
 int shard_node_base_add(ShardNode * node,
                         const unsigned char * data,
-                        int entrySize,
-                        int footerLength);
+                        long long entrySize,
+                        long long footerLength);
 
 /**
  * Lookup an entry in a base node
  */
 unsigned char * shard_node_base_lookup(ShardNode * node,
                                        const unsigned char * data,
-                                       int entrySize,
-                                       int footerLength);
+                                       long long entrySize,
+                                       long long footerLength);
 
 #endif
